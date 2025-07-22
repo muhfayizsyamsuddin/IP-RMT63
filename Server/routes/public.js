@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const courtController = require("../controllers/courtController");
+const publicController = require("../controllers/publicController");
 
 //* Public routes
-router.get("/courts", courtController.findAll);
-router.get("/courts/:id", courtController.findById);
+// GET semua lapangan (semua user bisa lihat)
+router.get("/courts", publicController.getCourts);
+// GET detail lapangan by id
+router.get("/courts/:id", publicController.getCourtsById);
 
 module.exports = router;
