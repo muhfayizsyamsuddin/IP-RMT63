@@ -1,29 +1,20 @@
 const { Court } = require("../models");
 
 module.exports = class courtController {
-  static async getCourts(req, res, next) {
+  static async getAllCourts(req, res, next) {
     try {
-      console.log("FILTER CONDITIONS:", { where });
-      const offset = (page - 1) * limit;
-      const { rows, count } = await Court.findAndCountAll({
-        where,
-        limit: +limit,
-        offset: +offset,
+      const { order = "DESC" } = req.query;
+
+      const courts = await Court.findAll({
+        order: [["updatedAt", order.toUpperCase()]], // ASC / DESC
       });
-      res.status(200).json({
-        data: rows,
-        pagination: {
-          page: +page,
-          totalPages: Math.ceil(count / limit),
-          totalData: count,
-        },
-      });
+      res.status(200).json(courts);
     } catch (err) {
       next(err);
     }
   }
 
-  static async getCourtsById(req, res, next) {
+  static async getCourtById(req, res, next) {
     try {
       const courtId = req.params.id;
       const court = await Court.findByPk(courtId);
