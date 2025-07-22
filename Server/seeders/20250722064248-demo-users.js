@@ -1,4 +1,7 @@
 "use strict";
+
+const { hashPassword } = require("../helpers/bcrypt");
+
 // const bcrypt = require("bcryptjs");
 
 /** @type {import('sequelize-cli').Migration} */
@@ -8,7 +11,7 @@ module.exports = {
       {
         name: "Admin Sportify",
         email: "admin@sportify.com",
-        password: hashedPassword,
+        password: hashPassword("12345678"),
         role: "admin",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -16,7 +19,7 @@ module.exports = {
       {
         name: "User Sportify",
         email: "user@sportify.com",
-        password: hashedPassword,
+        password: hashPassword("12345678"),
         role: "user",
         createdAt: new Date(),
         updatedAt: new Date(),
