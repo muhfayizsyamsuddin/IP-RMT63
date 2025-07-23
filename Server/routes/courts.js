@@ -3,6 +3,7 @@ const router = express.Router();
 const courtController = require("../controllers/courtController");
 const authentication = require("../middleware/authentication");
 const isAdmin = require("../middleware/isAdmin");
+const errorHandler = require("../middleware/errorHandler");
 
 // Semua endpoint di sini harus login dulu
 router.use(authentication); //* Semua route setelah ini butuh login
@@ -21,5 +22,8 @@ router.put("/:id", isAdmin, courtController.updateCourt);
 
 // DELETE hapus lapangan (admin)
 router.delete("/:id", isAdmin, courtController.deleteCourt);
+
+//* error handler
+router.use(errorHandler);
 
 module.exports = router;

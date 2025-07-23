@@ -9,7 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      bookingId: {
+      BookingId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -17,9 +17,11 @@ module.exports = {
           key: "id",
         },
         onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       amount: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       method: {
         type: Sequelize.STRING,
@@ -27,7 +29,8 @@ module.exports = {
       },
       status: {
         type: Sequelize.STRING,
-        defaultValue: "pending",
+        allowNull: false,
+        defaultValue: "pending", // or 'pending'
       },
       paymentUrl: {
         type: Sequelize.STRING,
