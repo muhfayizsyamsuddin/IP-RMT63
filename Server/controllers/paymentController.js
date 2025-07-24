@@ -4,30 +4,52 @@ module.exports = class paymentController {
   static async createPayment(req, res, next) {
     try {
       const { BookingId } = req.body;
-      // Cari Booking dengan relasi Court
+
       const booking = await Booking.findByPk(BookingId, {
         include: Court,
       });
-      if (!booking) {
-        throw { name: "NotFound", message: "Booking not found" };
-      }
-      // Cek apakah sudah ada payment untuk booking ini
-      const existing = await Payment.findOne({ where: { BookingId } });
-      if (existing) {
-        throw { name: "Forbidden", message: "Payment already exists" };
-      }
-      const amount = booking.Court?.pricePerHour;
-      if (!amount)
-        throw { name: "BadRequest", message: "Court price not found" };
-      const newPayment = await Payment.create({
-        BookingId,
-        amount,
-        method: "midtrans",
-        status: "pending",
-        paymentUrl: "https://dummy-payment.url.com", // nanti diganti dengan real Midtrans snap URL
+      if (!booking) throw { name: "NotFound", message: "Booking not found" };
+
+      // Hitung amount berdasarkan harga court (atau static)
+      const amount = 100000; // Bisa dinamis
+
+      // Inisialisasi Midtrans Snap client
+      let snap = new midtransClient.Snap({
+        isProduction: false, // ganti ke true kalau production
+        serverKey: process.env.MIDTRANS_SERVER_KEY,
       });
 
-      res.status(201).json({ message: "Payment created", payment: newPayment });
+      const parameter = {
+        transaction_details: {
+          order_id: `BOOKING-${booking.id}-${Date.now()}`,
+          gross_amount: amount,
+        },
+        customer_details: {
+          first_name: req.user.name || "Customer",
+          email: req.user.email,
+        },
+        item_details: [
+          {
+            id: booking.id,
+            price: amount,
+            quantity: 1,
+            name: booking.Court.name,
+          },
+        ],
+        credit_card: {
+          secure: true,
+        },
+      };
+
+      const midtransRes = await snap.createTransaction(parameter);
+
+      const payment = await Payment.create({
+        BookingId,
+        amount,
+        paymentUrl: midtransRes.redirect_url,
+      });
+
+      res.status(201).json({ message: "Payment created", payment });
     } catch (err) {
       next(err);
     }
@@ -56,14 +78,24 @@ module.exports = class paymentController {
     try {
       const { id } = req.params;
 
-      const payment = await Payment.findByPk(id);
+      const payment = await Payment.findByPk(id, {
+        include: Booking,
+      });
       if (!payment) {
         throw { name: "NotFound", message: "Payment not found" };
       }
+
+      // Tandai sebagai paid
       payment.status = "paid";
       payment.paidAt = new Date();
-
       await payment.save();
+
+      // Update Booking.isPaid = true
+      const booking = await Booking.findByPk(payment.BookingId);
+      if (booking) {
+        booking.isPaid = true;
+        await booking.save();
+      }
 
       res.status(200).json({ message: "Payment marked as paid", payment });
     } catch (err) {

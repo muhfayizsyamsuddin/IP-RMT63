@@ -1,33 +1,57 @@
-const { Booking, Court } = require("../models");
+const { Booking, Court, User, Payment } = require("../models");
 
 module.exports = class bookingController {
   //* Buat Booking (user)
   static async getMyBookings(req, res, next) {
     try {
       const userId = req.user.id;
+      console.log("🚀 ~ getMyBookings ~ userId:", userId);
       const bookings = await Booking.findAll({
         where: { UserId: userId },
-        include: Court,
-        order: [["createdAt", "DESC"]],
+        include: [
+          Court,
+          {
+            model: Payment,
+            attributes: ["status", "paidAt"],
+            required: false,
+          },
+        ],
       });
       res.status(200).json(bookings);
     } catch (err) {
+      console.log("🚀 ~ getMyBookings ~ err:", err);
       next(err);
     }
   }
-
+  //* Ambil semua booking (admin)
   static async getAllBookings(req, res, next) {
     try {
-      const bookings = await Booking.findAll({
-        include: Court,
+      const { status } = req.query;
+
+      const options = {
+        include: [
+          { model: Court },
+          {
+            model: User,
+            attributes: ["id", "email", "name"],
+          },
+        ],
         order: [["createdAt", "DESC"]],
-      });
+      };
+
+      // Tambahkan filter jika ada query status
+      if (status) {
+        options.where = { status };
+        console.log("🚀 ~ getAllBookings ~ options:", options);
+      }
+
+      const bookings = await Booking.findAll(options);
       res.status(200).json(bookings);
     } catch (err) {
-      next(err);
+      next(err); // pastikan error dikirim ke error handler
     }
   }
-
+  //* Create Booking (user)
   static async createBooking(req, res, next) {
     try {
       const userId = req.user.id;
@@ -44,7 +68,7 @@ module.exports = class bookingController {
       next(err);
     }
   }
-
+  //* Update Booking (admin)
   static async updateBooking(req, res, next) {
     try {
       const { id } = req.params;
@@ -71,7 +95,7 @@ module.exports = class bookingController {
       next(err);
     }
   }
-
+  //* Update Booking Status (admin)
   static async updateBookingStatus(req, res, next) {
     try {
       const { id } = req.params;
@@ -93,7 +117,7 @@ module.exports = class bookingController {
       next(err);
     }
   }
-
+  //* Hapus Booking (admin)
   static async deleteBooking(req, res, next) {
     try {
       const { id } = req.params;

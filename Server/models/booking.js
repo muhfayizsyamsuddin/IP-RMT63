@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Booking.belongsTo(models.User, { foreignKey: "UserId" });
       Booking.belongsTo(models.Court, { foreignKey: "CourtId" });
+      Booking.hasOne(models.Payment, { foreignKey: "BookingId" });
     }
   }
   Booking.init(
@@ -29,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
       status: {
         type: DataTypes.STRING,
         defaultValue: "pending",
+      },
+      isPaid: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
     {
