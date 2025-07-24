@@ -31,7 +31,7 @@ export default function MyBookings() {
       window.open(snapUrl, "_blank"); // sementara pakai dummy payment URL
     } catch (err) {
       console.error("Gagal membuat payment:", err);
-      alert("Gagal melakukan pembayaran");
+      alert("Gagal melakukan pembayaran"); // tampilkan pesan error
     }
   }
 
