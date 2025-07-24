@@ -16,9 +16,9 @@ app.use(express.json());
 
 // Routes
 app.use("/auth", authRoutes); // POST /auth/register, /login
-app.use("/public", publicRoutes); // misal: /pub/courts
+app.use("/public", publicRoutes);
 
-app.use("/courts", courtRoutes); // GET /courts
+app.use("/courts", courtRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/payments", paymentRoutes);
 // router.use(authentication); // Semua route setelah ini butuh login
