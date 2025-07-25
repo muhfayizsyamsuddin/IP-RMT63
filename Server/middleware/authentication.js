@@ -5,6 +5,7 @@ const { verifyToken } = require("../helpers/jwt");
 module.exports = async function authentication(req, res, next) {
   //! Extract token: Get Bearer token from authorization header
   const bearerToken = req.headers.authorization;
+  console.log("🔐 Authorization Header:", bearerToken);
   if (!bearerToken) {
     next({ name: "Unauthorized", message: "Invalid token" }); //401
     return;

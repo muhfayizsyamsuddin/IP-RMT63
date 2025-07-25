@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../helpers/http-client";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
+import { SuccessAlert, ErrorAlert } from "../helpers/alert";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ export default function Login() {
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("role", role);
 
-      alert("Login sukses!");
+      SuccessAlert("Login berhasil!");
       if (role === "admin") {
         navigate("/admin/bookings");
       } else {
@@ -32,7 +34,9 @@ export default function Login() {
       }
     } catch (err) {
       console.error("❌ Login Error:", err);
-      alert("Login gagal. Periksa email & password.");
+      const errors =
+        err.response?.data?.message || err.message || "Something went wrong!";
+      ErrorAlert(errors, "Login Failed");
     }
   };
 
@@ -55,15 +59,17 @@ export default function Login() {
       const name = localStorage.getItem("name");
       console.log("🚀 ~ handleCredentialResponse ~ name:", name);
       localStorage.setItem("name", response.data?.user?.name);
-      alert("Login sukses dengan Google!");
       if (role === "admin") {
         navigate("/admin/bookings");
       } else {
         navigate("/public/courts");
       }
+      SuccessAlert("Login berhasil!");
     } catch (err) {
       console.error("❌ Google Login Error:", err);
-      alert("Login dengan Google gagal. Coba lagi.");
+      const errors =
+        err.response?.data?.message || err.message || "Something went wrong!";
+      ErrorAlert(errors, "Login Failed");
     }
   }
   useEffect(() => {
@@ -132,12 +138,12 @@ export default function Login() {
           <div id="buttonDiv"></div>
         </div>
 
-        <p className="text-sm text-center text-gray-500 mt-4">
+        {/* <p className="text-sm text-center text-gray-500 mt-4">
           Belum punya akun?{" "}
           <a href="/pub/courts" className="text-blue-600 hover:underline">
             Daftar di sini
           </a>
-        </p>
+        </p> */}
       </div>
     </div>
   );

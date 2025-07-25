@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../helpers/http-client";
 import EditBookingModal from "../components/EditBookingModal";
 import CancelModal from "../components/CancelModal";
+import { ErrorAlert, SuccessAlert } from "../helpers/alert";
 
 export default function AllBookings() {
   const [bookings, setBookings] = useState([]);
@@ -38,12 +39,14 @@ export default function AllBookings() {
       await api.patch(`/bookings/${selectedBookingId}/status`, {
         status: "cancelled",
       });
-      alert("Booking berhasil dibatalkan");
       setShowCancelModal(false);
       fetchBookings();
+      SuccessAlert("Booking berhasil dibatalkan!");
     } catch (err) {
       console.error("Gagal cancel:", err);
-      alert("Gagal membatalkan booking");
+      const errors =
+        err.response?.data?.message || err.message || "Something went wrong!";
+      ErrorAlert(errors, "Cancel Booking Failed");
     }
   }
 
@@ -52,11 +55,13 @@ export default function AllBookings() {
       await api.patch(`/bookings/${id}/status`, {
         status: "approved",
       });
-      alert("Booking disetujui!");
       fetchBookings();
+      SuccessAlert("Booking berhasil disetujui!");
     } catch (err) {
       console.error("Gagal approve:", err);
-      alert("Gagal menyetujui booking");
+      const errors =
+        err.response?.data?.message || err.message || "Something went wrong!";
+      ErrorAlert(errors, "Approve Booking Failed");
     }
   }
   const openEditModal = (booking) => {
@@ -71,12 +76,14 @@ export default function AllBookings() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      alert("Booking berhasil diupdate!");
       setShowEditModal(false);
       fetchBookings();
+      SuccessAlert("Booking berhasil diupdate!");
     } catch (err) {
       console.error("Gagal update booking:", err);
-      alert("Gagal update booking");
+      const errors =
+        err.response?.data?.message || err.message || "Something went wrong!";
+      ErrorAlert(errors, "Update Booking Failed");
     }
   };
 

@@ -9,6 +9,9 @@ export default function BookingForm({ courtId }) {
     startTime: "",
     endTime: "",
   });
+  const [preference, setPreference] = useState("");
+  const [recommendation, setRecommendation] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -36,6 +39,31 @@ export default function BookingForm({ courtId }) {
     } catch (err) {
       console.error(err);
       alert("❌ Gagal booking. Coba lagi.");
+    }
+  }
+
+  async function handleRecommendation() {
+    setLoading(true);
+    console.log("🧠 AI Recommendation: Memulai permintaan ke backend...");
+    try {
+      const response = await api.post("/ai/recommend", {
+        courtId,
+        preference,
+        availableSlots: [
+          "2025-07-25 07:00 - 08:00",
+          "2025-07-25 16:00 - 17:00",
+          "2025-07-26 09:00 - 10:00",
+        ],
+      });
+      console.log("📦 Rekomendasi dari AI:", response.data);
+      console.log("📩 Text rekomendasi:", response.data.recommendation);
+      // setRecommendation("Saran: Booking jam 7 pagi atau jam 4 sore.");
+      setRecommendation(response.data.recommendation || "Tidak ada hasil.");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Gagal mendapatkan rekomendasi.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -82,6 +110,35 @@ export default function BookingForm({ courtId }) {
       <button type="submit" className="btn btn-primary w-100">
         Booking Sekarang
       </button>
+      <hr className="my-4" />
+
+      {/* AI Recommendation Section */}
+      <div className="space-y-2">
+        <label>Preferensi Booking (opsional)</label>
+        <input
+          type="text"
+          value={preference}
+          onChange={(e) => setPreference(e.target.value)}
+          placeholder="Contoh: pagi hari, cuaca cerah"
+          className="form-control"
+        />
+        <button
+          type="button"
+          className="btn btn-success w-100"
+          onClick={handleRecommendation}
+          disabled={loading}
+        >
+          {loading ? "Memproses..." : "Rekomendasikan Waktu Booking (AI)"}
+        </button>
+
+        {recommendation && (
+          <div className="alert alert-info mt-3">
+            <strong>Rekomendasi:</strong> {recommendation}
+          </div>
+        )}
+      </div>
+      {loading && <p className="text-muted">Sedang memproses AI...</p>}
+      <p className="text-sm text-muted">Debug: {recommendation}</p>
     </form>
   );
 }

@@ -7,7 +7,7 @@ export default function AuthenticatedLayout() {
     return <Navigate to={"/auth/login"} />;
   }
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100 pt-20">
       <Navbar />
       <Outlet />
     </div>

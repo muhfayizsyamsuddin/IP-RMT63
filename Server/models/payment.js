@@ -55,6 +55,11 @@ module.exports = (sequelize, DataTypes) => {
       paidAt: {
         type: DataTypes.DATE,
       },
+      orderId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
     },
     {
       sequelize,
