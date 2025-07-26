@@ -143,3 +143,108 @@ describe("GET /payments/mine", () => {
     }
   });
 });
+describe("PATCH /payments/:id", () => {
+  it("should mark payment as paid", async () => {
+    const user = await User.findOne();
+    const court = await Court.findOne();
+
+    const booking = await Booking.create({
+      UserId: user.id,
+      CourtId: court.id,
+      date: "2025-08-05",
+      timeStart: "09:00",
+      timeEnd: "11:00",
+      isPaid: false,
+    });
+
+    const payment = await Payment.create({
+      BookingId: booking.id,
+      orderId: `MANUAL-${booking.id}`,
+      amount: 200000,
+      status: "pending",
+      paymentUrl: "https://dummy.url",
+    });
+
+    const res = await request(app)
+      .patch(`/payments/${payment.id}`)
+      .set("Authorization", `Bearer ${access_token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Payment marked as paid");
+
+    const updated = await Payment.findByPk(payment.id);
+    expect(updated.status).toBe("paid");
+  });
+
+  it("should return 404 if payment not found", async () => {
+    const res = await request(app)
+      .patch("/payments/99999")
+      .set("Authorization", `Bearer ${access_token}`);
+
+    expect(res.status).toBe(404);
+  });
+});
+describe("GET /payments/:id", () => {
+  it("should return payment details", async () => {
+    const user = await User.findOne();
+    const court = await Court.findOne();
+    const booking = await Booking.create({
+      UserId: user.id,
+      CourtId: court.id,
+      date: "2025-08-10",
+      timeStart: "10:00",
+      timeEnd: "12:00",
+      isPaid: false,
+    });
+    const payment = await Payment.create({
+      BookingId: booking.id,
+      orderId: `DETAIL-${booking.id}`,
+      amount: 200000,
+      status: "pending",
+      paymentUrl: "https://dummy.url",
+    });
+    const res = await request(app)
+      .get(`/payments/${payment.id}`)
+      .set("Authorization", `Bearer ${access_token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("id", payment.id);
+    expect(res.body).toHaveProperty("amount", payment.amount);
+    expect(res.body).toHaveProperty("status", payment.status);
+    expect(res.body).toHaveProperty("paymentUrl", payment.paymentUrl);
+  });
+
+  it("should return 404 if payment not found", async () => {
+    const res = await request(app)
+      .get("/payments/99999")
+      .set("Authorization", `Bearer ${access_token}`);
+
+    expect(res.status).toBe(404);
+  });
+  it("should return 401 if not authenticated", async () => {
+    const res = await request(app).get("/payments/99999");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message", "Unauthorized");
+  });
+  it("should return 401 if no token provided", async () => {
+    const res = await request(app).get("/payments/99999");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message", "Unauthorized");
+  });
+  it("should return 401 if no token provided", async () => {
+    const res = await request(app).get("/payments/99999");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message", "Unauthorized");
+  });
+  it("should return 403 if user does not have permission", async () => {
+    const res = await request(app)
+      .get("/payments/99999")
+      .set("Authorization", `Bearer ${access_token}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("message", "Forbidden");
+  });
+});

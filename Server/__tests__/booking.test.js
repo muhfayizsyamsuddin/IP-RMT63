@@ -72,6 +72,37 @@ describe("POST /bookings", () => {
     expect(res.body).toHaveProperty("message", "Booking created");
     expect(res.body.booking).toHaveProperty("id");
   });
+  it("should return 400 if booking time overlaps", async () => {
+    const res = await request(app)
+      .post("/bookings")
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        CourtId: courtId,
+        date: "2025-07-26",
+        timeStart: "10:00",
+        timeEnd: "12:00",
+      });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty(
+      "message",
+      "Booking time overlaps with existing booking"
+    );
+  });
+  it("should return 404 if court not found", async () => {
+    const res = await request(app)
+      .post("/bookings")
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        CourtId: 9999, // non-existent court
+        date: "2025-07-26",
+        timeStart: "09:00",
+        timeEnd: "11:00",
+      });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "Court not found");
+  });
 });
 
 describe("GET /bookings/mine", () => {
@@ -82,6 +113,18 @@ describe("GET /bookings/mine", () => {
 
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
+  });
+  it("should return 401 if not authenticated", async () => {
+    const res = await request(app).get("/bookings/mine");
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message", "Authentication failed");
+  });
+  it("should return 401 if no token provided", async () => {
+    const res = await request(app).get("/bookings/mine");
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message", "Authentication failed");
   });
 });
 
@@ -132,6 +175,27 @@ describe("PATCH /bookings/:id/status", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("message", "Booking status updated");
   });
+  it("should return 403 if user tries to approve booking", async () => {
+    const res = await request(app)
+      .patch(`/bookings/${bookingId}/status`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        status: "approved",
+      });
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty("message", "Forbidden");
+  });
+  it("should return 404 if booking not found", async () => {
+    const res = await request(app)
+      .patch("/bookings/99999/status")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        status: "approved",
+      });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "Booking not found");
+  });
 });
 describe("DELETE /bookings/:id", () => {
   it("should delete booking", async () => {
@@ -141,5 +205,13 @@ describe("DELETE /bookings/:id", () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("message", "Booking deleted");
+  });
+  it("should return 404 if booking not found", async () => {
+    const res = await request(app)
+      .delete("/bookings/99999")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "Booking not found");
   });
 });

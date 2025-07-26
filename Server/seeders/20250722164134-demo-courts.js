@@ -45,7 +45,7 @@ module.exports = {
         description:
           "Lapangan volley indoor full net, cocok untuk turnamen lokal.",
         imageUrl:
-          "https://www.pexels.com/photo/people-standing-on-the-wooden-court-6203539/",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBWtFeB-nqsRyFyeV8mLH8MScyK9K3d5G5MQ&s",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
