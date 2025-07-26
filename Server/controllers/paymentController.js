@@ -55,7 +55,7 @@ module.exports = class paymentController {
         isProduction: false,
         serverKey: process.env.MIDTRANS_SERVER_KEY,
       });
-      console.log("✅ MIDTRANS KEY:", process.env.MIDTRANS_SERVER_KEY);
+      console.log(" MIDTRANS KEY:", process.env.MIDTRANS_SERVER_KEY);
 
       // 👇 Buat orderId unik
       const orderId = `BOOKING-${booking.id}-${Date.now()}`;
