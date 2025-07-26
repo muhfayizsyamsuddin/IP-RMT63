@@ -41,33 +41,40 @@ export default function Navbar() {
           className="flex items-center space-x-2 text-blue-600 font-bold text-xl cursor-pointer"
           onClick={() => navigate("/")}
         >
-          <img src="/Sportify-Courts.png" alt="Logo" className="h-11 w-16" />
+          <img
+            src="/Sportify-Courts.png"
+            alt="Logo"
+            className="h-11 w-16 object-contain"
+          />
+          <span className="hidden sm:block text-blue-700 font-extrabold">
+            Sportify
+          </span>
         </div>
 
         {/* Desktop menu */}
-        <div className="hidden md:flex space-x-6 items-center">
+        <div className="hidden md:flex space-x-6 items-center font-medium text-gray-700">
+          {navItem("Home", "/")}
           {navItem("Courts", "/")}
-          {/* {navItem("Courts", "/courts")} */}
           {isLoggedIn && navItem("Booking History", "/bookings/mine")}
           {isLoggedIn && role === "admin" && navItem("Admin Panel", "/admin")}
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
             >
               Logout
             </button>
           ) : (
-            <span
+            <button
               onClick={() => navigate("/login")}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
             >
               Login
-            </span>
+            </button>
           )}
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile toggle */}
         <div className="md:hidden">
           <button onClick={() => setIsOpen(!isOpen)} className="text-gray-700">
             {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -77,7 +84,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden bg-white shadow-md px-4 pb-4">
+        <div className="md:hidden bg-white shadow-md px-4 pb-4 space-y-2 text-gray-700 font-medium">
           {navItem("Home", "/")}
           {navItem("Courts", "/courts")}
           {isLoggedIn && navItem("Booking History", "/booking-history")}
@@ -85,17 +92,17 @@ export default function Navbar() {
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
-              className="w-full mt-2 bg-red-500 text-white py-2 rounded hover:bg-red-600"
+              className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition"
             >
               Logout
             </button>
           ) : (
-            <span
+            <button
               onClick={() => navigate("/auth/login")}
-              className="block mt-2 text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
             >
               Login
-            </span>
+            </button>
           )}
         </div>
       )}
