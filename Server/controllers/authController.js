@@ -39,6 +39,12 @@ module.exports = class authController {
       if (!password) {
         throw { name: "BadRequest", message: "Password is required" }; //400
       }
+      if (!password || password.length < 6) {
+        throw {
+          name: "BadRequest",
+          message: "Password must be at least 6 characters long",
+        };
+      }
       const user = await User.findOne({ where: { email } });
       // console.log(user);
       if (!user) {
@@ -50,7 +56,7 @@ module.exports = class authController {
       const isValidPassword = comparePassword(password, user.password);
       if (!isValidPassword) {
         throw { name: "Unauthorized", message: "Invalid email or password" };
-      } // 400
+      } // 401
       const accessToken = signToken({ id: user.id, role: user.role });
       res.status(200).json({
         message: "Login Success",

@@ -13,7 +13,7 @@ const publicRoutes = require("./routes/public");
 const courtRoutes = require("./routes/courts"); // nanti
 const bookingRoutes = require("./routes/bookings"); // nanti
 const paymentRoutes = require("./routes/payments"); // nanti
-// const errorHandler = require("./middlewares/errorHandler"); // nanti
+// const errorHandler = require("./middleware/errorHandler"); // nanti
 const aiRoutes = require("./routes/ai"); // untuk AI
 
 app.use(cors());
@@ -24,9 +24,9 @@ app.use(
   "/payments/midtrans/callback",
   express.raw({ type: "*/*" }) // Midtrans butuh raw body
 );
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "its my life" });
-});
+// app.get("/", (req, res) => {
+//   res.status(200).json({ message: "its my life" });
+// });
 
 app.use(express.json());
 

@@ -7,8 +7,8 @@ import { SuccessAlert, ErrorAlert } from "../helpers/alert";
 export default function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("admin@sportify.com");
-  const [password, setPassword] = useState("12345678");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();

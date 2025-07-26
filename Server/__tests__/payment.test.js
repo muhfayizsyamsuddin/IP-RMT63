@@ -142,6 +142,18 @@ describe("GET /payments/mine", () => {
       expect(payment.Booking.Court).toHaveProperty("name");
     }
   });
+  it("should return 401 if not authenticated", async () => {
+    const res = await request(app).get("/payments/mine");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message", "Invalid token");
+  });
+  it("should return 401 if no token provided", async () => {
+    const res = await request(app).get("/payments/mine");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message", "Invalid token");
+  });
 });
 describe("PATCH /payments/:id", () => {
   it("should mark payment as paid", async () => {
@@ -175,13 +187,24 @@ describe("PATCH /payments/:id", () => {
     const updated = await Payment.findByPk(payment.id);
     expect(updated.status).toBe("paid");
   });
-
   it("should return 404 if payment not found", async () => {
     const res = await request(app)
       .patch("/payments/99999")
       .set("Authorization", `Bearer ${access_token}`);
 
     expect(res.status).toBe(404);
+  });
+  it("should return 401 if not authenticated", async () => {
+    const res = await request(app).patch("/payments/99999");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message", "Invalid token");
+  });
+  it("should return 401 if no token provided", async () => {
+    const res = await request(app).patch("/payments/99999");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("message", "Invalid token");
   });
 });
 describe("GET /payments/:id", () => {
@@ -213,7 +236,6 @@ describe("GET /payments/:id", () => {
     expect(res.body).toHaveProperty("status", payment.status);
     expect(res.body).toHaveProperty("paymentUrl", payment.paymentUrl);
   });
-
   it("should return 404 if payment not found", async () => {
     const res = await request(app)
       .get("/payments/99999")
@@ -225,19 +247,13 @@ describe("GET /payments/:id", () => {
     const res = await request(app).get("/payments/99999");
 
     expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty("message", "Unauthorized");
+    expect(res.body).toHaveProperty("message", "Invalid token");
   });
   it("should return 401 if no token provided", async () => {
     const res = await request(app).get("/payments/99999");
 
     expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty("message", "Unauthorized");
-  });
-  it("should return 401 if no token provided", async () => {
-    const res = await request(app).get("/payments/99999");
-
-    expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty("message", "Unauthorized");
+    expect(res.body).toHaveProperty("message", "Invalid token");
   });
   it("should return 403 if user does not have permission", async () => {
     const res = await request(app)

@@ -118,13 +118,13 @@ describe("GET /bookings/mine", () => {
     const res = await request(app).get("/bookings/mine");
 
     expect(res.statusCode).toBe(401);
-    expect(res.body).toHaveProperty("message", "Authentication failed");
+    expect(res.body).toHaveProperty("message", "Invalid token");
   });
   it("should return 401 if no token provided", async () => {
     const res = await request(app).get("/bookings/mine");
 
     expect(res.statusCode).toBe(401);
-    expect(res.body).toHaveProperty("message", "Authentication failed");
+    expect(res.body).toHaveProperty("message", "Invalid token");
   });
 });
 
@@ -183,7 +183,10 @@ describe("PATCH /bookings/:id/status", () => {
         status: "approved",
       });
     expect(res.statusCode).toBe(403);
-    expect(res.body).toHaveProperty("message", "Forbidden");
+    expect(res.body).toHaveProperty(
+      "message",
+      "Only admin can access this resource"
+    );
   });
   it("should return 404 if booking not found", async () => {
     const res = await request(app)

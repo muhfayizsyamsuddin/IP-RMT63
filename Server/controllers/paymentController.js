@@ -10,13 +10,14 @@ module.exports = class paymentController {
       const { BookingId } = req.body;
       console.log("🚀 ~ createPayment ~ BookingId:", BookingId);
 
-      const booking = await Booking.findByPk(BookingId, {
-        include: Court,
+      const booking = await Booking.findOne({
         where: {
           id: BookingId,
-          UserId: req.user.id, // validasi ownership
+          UserId: req.user.id,
         },
+        include: Court,
       });
+
       console.log("🔍 Booking:", booking);
       if (!booking) throw { name: "NotFound", message: "Booking not found" };
 
