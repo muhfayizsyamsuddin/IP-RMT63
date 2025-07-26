@@ -24,6 +24,9 @@ app.use(
   "/payments/midtrans/callback",
   express.raw({ type: "*/*" }) // Midtrans butuh raw body
 );
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "its my life" });
+});
 
 app.use(express.json());
 
