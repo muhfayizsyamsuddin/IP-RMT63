@@ -80,7 +80,7 @@ module.exports = class authController {
         audience: process.env.GOOGLE_CLIENT_ID,
       });
       const { name, email } = ticket.getPayload();
-      console.log("Google Payload:", { name, email });
+      // console.log("Google Payload:", { name, email });
       let user = await User.findOne({ where: { email } });
       if (!user) {
         user = await User.create({

@@ -38,7 +38,7 @@ app.use("/courts", courtRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/payments", paymentRoutes);
 app.use("/ai", aiRoutes);
-console.log("✅ /ai route berhasil dimount");
+// console.log("✅ /ai route berhasil dimount");
 // router.use(authentication); // Semua route setelah ini butuh login
 // Error handler
 // app.use(errorHandler);

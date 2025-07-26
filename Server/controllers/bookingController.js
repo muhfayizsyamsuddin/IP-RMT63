@@ -5,7 +5,7 @@ module.exports = class bookingController {
   static async getMyBookings(req, res, next) {
     try {
       const userId = req.user.id;
-      console.log("🚀 ~ getMyBookings ~ userId:", userId);
+      // console.log("🚀 ~ getMyBookings ~ userId:", userId);
       const bookings = await Booking.findAll({
         where: { UserId: userId },
         include: [
@@ -19,7 +19,7 @@ module.exports = class bookingController {
       });
       res.status(200).json(bookings);
     } catch (err) {
-      console.log("🚀 ~ getMyBookings ~ err:", err);
+      // console.log("🚀 ~ getMyBookings ~ err:", err);
       next(err);
     }
   }
@@ -42,7 +42,7 @@ module.exports = class bookingController {
       // Tambahkan filter jika ada query status
       if (status) {
         options.where = { status };
-        console.log("🚀 ~ getAllBookings ~ options:", options);
+        // console.log("🚀 ~ getAllBookings ~ options:", options);
       }
 
       const bookings = await Booking.findAll(options);
