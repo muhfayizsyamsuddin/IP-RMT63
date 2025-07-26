@@ -19,6 +19,9 @@ module.exports = class paymentController {
       });
 
       console.log("🔍 Booking:", booking);
+      if (!booking.Court) {
+        throw new Error("Court not found for the booking");
+      }
       if (!booking) throw { name: "NotFound", message: "Booking not found" };
 
       const [startH, startM] = booking.timeStart.split(":").map(Number);
@@ -52,6 +55,7 @@ module.exports = class paymentController {
         isProduction: false,
         serverKey: process.env.MIDTRANS_SERVER_KEY,
       });
+      console.log("✅ MIDTRANS KEY:", process.env.MIDTRANS_SERVER_KEY);
 
       // 👇 Buat orderId unik
       const orderId = `BOOKING-${booking.id}-${Date.now()}`;
@@ -88,6 +92,9 @@ module.exports = class paymentController {
         console.log("🚀 Calling Midtrans Snap...");
         midtransRes = await snap.createTransaction(parameter);
         console.log("📦 Midtrans Response:", midtransRes);
+        if (!midtransRes.redirect_url) {
+          throw new Error("Midtrans response missing redirect_url");
+        }
       } catch (midErr) {
         console.log("❌ MIDTRANS ERROR:");
         console.log("MESSAGE:", midErr.message);
@@ -112,6 +119,7 @@ module.exports = class paymentController {
       // console.log("🚀 ~ createPayment ~ err:", err);
       console.log("❌ CREATE PAYMENT ERROR:");
       console.dir(err, { depth: null });
+      console.error("🔥 ERROR 500 at /payments", err);
       next(err);
     }
   }

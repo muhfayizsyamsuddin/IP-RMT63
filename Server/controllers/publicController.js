@@ -17,7 +17,7 @@ module.exports = class publicController {
       if (category) {
         where.category = { [Op.iLike]: `%${category}%` };
       }
-      console.log("FILTER CONDITIONS:", { where });
+      // console.log("FILTER CONDITIONS:", { where });
       const offset = (page - 1) * limit;
       const { rows, count } = await Court.findAndCountAll({
         where,
