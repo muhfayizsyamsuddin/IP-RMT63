@@ -5,203 +5,289 @@ const { Op } = require("sequelize");
 const dayjs = require("dayjs");
 
 module.exports = class paymentController {
-  static async createPayment(req, res, next) {
+  // static async createPayment(req, res, next) {
+  //   try {
+  //     const { BookingId } = req.body;
+  //     console.log("🚀 ~ createPayment ~ BookingId:", BookingId);
+
+  //     const booking = await Booking.findOne({
+  //       where: {
+  //         id: BookingId,
+  //         UserId: req.user.id,
+  //       },
+  //       include: Court,
+  //     });
+
+  //     console.log("🔍 Booking:", booking);
+  //     if (!booking.Court) {
+  //       throw new Error("Court not found for the booking");
+  //     }
+  //     if (!booking) throw { name: "NotFound", message: "Booking not found" };
+
+  //     const [startH, startM] = booking.timeStart.split(":").map(Number);
+  //     const [endH, endM] = booking.timeEnd.split(":").map(Number);
+  //     let baseDate = new Date(booking.date);
+  //     let start = new Date(baseDate);
+  //     start.setHours(startH, startM, 0, 0);
+
+  //     let end = new Date(baseDate);
+  //     end.setHours(endH, endM, 0, 0);
+
+  //     // Jika lintas hari
+  //     if (end <= start) {
+  //       end.setDate(end.getDate() + 1);
+  //     }
+
+  //     const durationInMinutes = (end - start) / 60000;
+  //     const durationInHours = durationInMinutes / 60;
+
+  //     // Hitung total harga
+  //     const amount = Math.ceil(durationInHours * booking.Court.pricePerHour);
+  //     console.log("💰 Final amount:", amount);
+  //     if (!amount || isNaN(amount) || amount <= 0) {
+  //       throw new Error("Invalid amount for payment");
+  //     }
+  //     console.log("🔐 Server Key:", process.env.MIDTRANS_SERVER_KEY);
+  //     if (!process.env.MIDTRANS_SERVER_KEY) {
+  //       throw new Error("MIDTRANS_SERVER_KEY is missing");
+  //     }
+  //     let snap = new midtransClient.Snap({
+  //       isProduction: false,
+  //       serverKey: process.env.MIDTRANS_SERVER_KEY,
+  //     });
+  //     console.log(" MIDTRANS KEY:", process.env.MIDTRANS_SERVER_KEY);
+
+  //     // 👇 Buat orderId unik
+  //     const orderId = `BOOKING-${booking.id}-${Date.now()}`;
+  //     console.log("🆔 Order ID:", orderId);
+
+  //     const parameter = {
+  //       transaction_details: {
+  //         order_id: orderId, // pakai orderId ini
+  //         gross_amount: amount,
+  //       },
+  //       customer_details: {
+  //         first_name: req.user.name || "Customer",
+  //         email: req.user.email || "anonymous@sportify.com",
+  //       },
+  //       item_details: [
+  //         {
+  //           id: booking.id,
+  //           price: amount,
+  //           quantity: 1,
+  //           name: booking.Court.name,
+  //         },
+  //       ],
+  //       credit_card: {
+  //         secure: true,
+  //       },
+  //     };
+  //     console.log("🔑 MIDTRANS_SERVER_KEY:", process.env.MIDTRANS_SERVER_KEY);
+  //     // const midtransRes = await snap.createTransaction(parameter);
+  //     // console.log("📦 Midtrans Response:", midtransRes); // HARUS ADA redirect_url
+  //     console.log("💰 Final amount:", amount);
+  //     console.log("📤 Midtrans Params:", parameter);
+  //     let midtransRes;
+  //     try {
+  //       console.log("🚀 Calling Midtrans Snap...");
+  //       midtransRes = await snap.createTransaction(parameter);
+  //       console.log("📦 Midtrans Response:", midtransRes);
+  //       if (!midtransRes.redirect_url) {
+  //         throw new Error("Midtrans response missing redirect_url");
+  //       }
+  //     } catch (midErr) {
+  //       console.log("❌ MIDTRANS ERROR:");
+  //       console.log("MESSAGE:", midErr.message);
+  //       console.log(
+  //         "RESPONSE:",
+  //         JSON.stringify(midErr.httpClientError, null, 2)
+  //       );
+  //       console.dir(midErr, { depth: null });
+  //       return next(midErr);
+  //     }
+  //     // 👇 Simpan orderId juga
+  //     const payment = await Payment.create({
+  //       BookingId,
+  //       amount,
+  //       paymentUrl: midtransRes.redirect_url,
+  //       orderId, // 👈 simpan orderId
+  //     });
+
+  //     console.log("✅ Payment saved to DB:", payment);
+  //     res.status(201).json({ snapToken: midtransRes.token });
+  //   } catch (err) {
+  //     // console.log("🚀 ~ createPayment ~ err:", err);
+  //     console.log("❌ CREATE PAYMENT ERROR:");
+  //     console.dir(err, { depth: null });
+  //     console.error("🔥 ERROR 500 at /payments", err);
+  //     next(err);
+  //   }
+  // }
+
+  // static async getMyPayments(req, res, next) {
+  //   try {
+  //     const userId = req.user.id;
+
+  //     const payments = await Payment.findAll({
+  //       include: {
+  //         model: Booking,
+  //         where: { UserId: userId },
+  //         include: Court,
+  //       },
+  //       order: [["createdAt", "DESC"]],
+  //     });
+
+  //     res.status(200).json(payments);
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
+
+  // static async markAsPaid(req, res, next) {
+  //   try {
+  //     const { id } = req.params;
+
+  //     const payment = await Payment.findByPk(id, {
+  //       include: Booking,
+  //     });
+  //     if (!payment) {
+  //       throw { name: "NotFound", message: "Payment not found" };
+  //     }
+
+  //     // Tandai sebagai paid
+  //     payment.status = "paid";
+  //     payment.paidAt = new Date();
+  //     await payment.save();
+
+  //     // Update Booking.isPaid = true
+  //     const booking = await Booking.findByPk(payment.BookingId);
+  //     if (booking) {
+  //       booking.isPaid = true;
+  //       await booking.save();
+  //     }
+
+  //     res.status(200).json({ message: "Payment marked as paid", payment });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
+
+  // static async midtransCallback(req, res, next) {
+  //   try {
+  //     console.log("🔥 Midtrans Callback Body:", req.body);
+
+  //     const notif = JSON.parse(req.body.toString());
+  //     const orderId = notif.order_id;
+
+  //     const payment = await Payment.findOne({ where: { orderId } });
+
+  //     if (!payment) throw { name: "NotFound", message: "Payment not found" };
+
+  //     if (
+  //       notif.transaction_status === "settlement" ||
+  //       notif.transaction_status === "capture"
+  //     ) {
+  //       payment.status = "paid";
+  //       payment.paidAt = new Date();
+  //       await payment.save();
+
+  //       const booking = await Booking.findByPk(payment.BookingId);
+  //       if (booking) {
+  //         booking.isPaid = true;
+  //         await booking.save();
+  //       }
+  //     }
+
+  //     res.status(200).json({ message: "Callback received" });
+  //   } catch (err) {
+  //     console.log("❌ Callback Error:", err);
+
+  //     next(err);
+  //   }
+  // }
+
+  static async initiateMidtransTrx(req, res, next) {
     try {
+      let snap = new midtransClient.Snap({
+        // Set to true if you want Production Environment (accept real transaction).
+        isProduction: false,
+        serverKey: process.env.MIDTRANS_SERVER_KEY,
+      });
+      const orderId = `BOOK-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const amount = 10000;
+      let parameter = {
+        // ini adalah data detail order
+        transaction_details: {
+          order_id: orderId,
+          gross_amount: amount,
+        },
+        // ini adalah data jenis pembayaran
+        credit_card: {
+          secure: true,
+        },
+        // ini adalah data customer
+        customer_details: {
+          first_name: req.user.name,
+          email: req.user.email,
+        },
+      };
+      // 1.create transaction to midtrans
+      const transaction = await snap.createTransaction(parameter);
+      // transaction token
+      let transactionToken = transaction.token;
+      // console.log("transactionToken:", transactionToken);
+      // 2. create order in our database
       const { BookingId } = req.body;
-      console.log("🚀 ~ createPayment ~ BookingId:", BookingId);
 
       const booking = await Booking.findOne({
         where: {
           id: BookingId,
           UserId: req.user.id,
         },
-        include: Court,
       });
 
-      console.log("🔍 Booking:", booking);
-      if (!booking.Court) {
-        throw new Error("Court not found for the booking");
-      }
-      if (!booking) throw { name: "NotFound", message: "Booking not found" };
+      if (!booking) throw new Error("Booking not found");
 
-      const [startH, startM] = booking.timeStart.split(":").map(Number);
-      const [endH, endM] = booking.timeEnd.split(":").map(Number);
-      let baseDate = new Date(booking.date);
-      let start = new Date(baseDate);
-      start.setHours(startH, startM, 0, 0);
-
-      let end = new Date(baseDate);
-      end.setHours(endH, endM, 0, 0);
-
-      // Jika lintas hari
-      if (end <= start) {
-        end.setDate(end.getDate() + 1);
-      }
-
-      const durationInMinutes = (end - start) / 60000;
-      const durationInHours = durationInMinutes / 60;
-
-      // Hitung total harga
-      const amount = Math.ceil(durationInHours * booking.Court.pricePerHour);
-      console.log("💰 Final amount:", amount);
-      if (!amount || isNaN(amount) || amount <= 0) {
-        throw new Error("Invalid amount for payment");
-      }
-      console.log("🔐 Server Key:", process.env.MIDTRANS_SERVER_KEY);
-      if (!process.env.MIDTRANS_SERVER_KEY) {
-        throw new Error("MIDTRANS_SERVER_KEY is missing");
-      }
-      let snap = new midtransClient.Snap({
-        isProduction: false,
-        serverKey: process.env.MIDTRANS_SERVER_KEY,
-      });
-      console.log(" MIDTRANS KEY:", process.env.MIDTRANS_SERVER_KEY);
-
-      // 👇 Buat orderId unik
-      const orderId = `BOOKING-${booking.id}-${Date.now()}`;
-      console.log("🆔 Order ID:", orderId);
-
-      const parameter = {
-        transaction_details: {
-          order_id: orderId, // pakai orderId ini
-          gross_amount: amount,
-        },
-        customer_details: {
-          first_name: req.user.name || "Customer",
-          email: req.user.email || "anonymous@sportify.com",
-        },
-        item_details: [
-          {
-            id: booking.id,
-            price: amount,
-            quantity: 1,
-            name: booking.Court.name,
-          },
-        ],
-        credit_card: {
-          secure: true,
-        },
-      };
-      console.log("🔑 MIDTRANS_SERVER_KEY:", process.env.MIDTRANS_SERVER_KEY);
-      // const midtransRes = await snap.createTransaction(parameter);
-      // console.log("📦 Midtrans Response:", midtransRes); // HARUS ADA redirect_url
-      console.log("💰 Final amount:", amount);
-      console.log("📤 Midtrans Params:", parameter);
-      let midtransRes;
-      try {
-        console.log("🚀 Calling Midtrans Snap...");
-        midtransRes = await snap.createTransaction(parameter);
-        console.log("📦 Midtrans Response:", midtransRes);
-        if (!midtransRes.redirect_url) {
-          throw new Error("Midtrans response missing redirect_url");
-        }
-      } catch (midErr) {
-        console.log("❌ MIDTRANS ERROR:");
-        console.log("MESSAGE:", midErr.message);
-        console.log(
-          "RESPONSE:",
-          JSON.stringify(midErr.httpClientError, null, 2)
-        );
-        console.dir(midErr, { depth: null });
-        return next(midErr);
-      }
-      // 👇 Simpan orderId juga
-      const payment = await Payment.create({
-        BookingId,
+      await Payment.create({
+        BookingId: booking.id,
         amount,
-        paymentUrl: midtransRes.redirect_url,
-        orderId, // 👈 simpan orderId
+        orderId,
       });
-
-      console.log("✅ Payment saved to DB:", payment);
-      res.status(201).json({ snapToken: midtransRes.token });
+      res.json({ message: "Order created", transactionToken });
     } catch (err) {
-      // console.log("🚀 ~ createPayment ~ err:", err);
-      console.log("❌ CREATE PAYMENT ERROR:");
+      console.log("❌ INITIATE MIDTRANS TRX ERROR:");
       console.dir(err, { depth: null });
-      console.error("🔥 ERROR 500 at /payments", err);
       next(err);
     }
   }
 
-  static async getMyPayments(req, res, next) {
+  static async upgradeAccount(req, res, next) {
     try {
       const userId = req.user.id;
 
-      const payments = await Payment.findAll({
-        include: {
-          model: Booking,
-          where: { UserId: userId },
-          include: Court,
+      // Cek apakah user sudah pernah upgrade
+      const existingPayment = await Payment.findOne({
+        where: {
+          UserId: userId,
+          status: "paid",
+          createdAt: {
+            [Op.gte]: dayjs().subtract(1, "month").toDate(),
+          },
         },
-        order: [["createdAt", "DESC"]],
       });
 
-      res.status(200).json(payments);
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  static async markAsPaid(req, res, next) {
-    try {
-      const { id } = req.params;
-
-      const payment = await Payment.findByPk(id, {
-        include: Booking,
-      });
-      if (!payment) {
-        throw { name: "NotFound", message: "Payment not found" };
+      if (existingPayment) {
+        return res.status(400).json({
+          message:
+            "You have already upgraded your account within the last month.",
+        });
       }
 
-      // Tandai sebagai paid
-      payment.status = "paid";
-      payment.paidAt = new Date();
-      await payment.save();
+      // Proses upgrade akun
+      // ... (logika upgrade akun)
 
-      // Update Booking.isPaid = true
-      const booking = await Booking.findByPk(payment.BookingId);
-      if (booking) {
-        booking.isPaid = true;
-        await booking.save();
-      }
-
-      res.status(200).json({ message: "Payment marked as paid", payment });
+      res.status(200).json({ message: "Account upgraded successfully" });
     } catch (err) {
-      next(err);
-    }
-  }
-
-  static async midtransCallback(req, res, next) {
-    try {
-      console.log("🔥 Midtrans Callback Body:", req.body);
-
-      const notif = JSON.parse(req.body.toString());
-      const orderId = notif.order_id;
-
-      const payment = await Payment.findOne({ where: { orderId } });
-
-      if (!payment) throw { name: "NotFound", message: "Payment not found" };
-
-      if (
-        notif.transaction_status === "settlement" ||
-        notif.transaction_status === "capture"
-      ) {
-        payment.status = "paid";
-        payment.paidAt = new Date();
-        await payment.save();
-
-        const booking = await Booking.findByPk(payment.BookingId);
-        if (booking) {
-          booking.isPaid = true;
-          await booking.save();
-        }
-      }
-
-      res.status(200).json({ message: "Callback received" });
-    } catch (err) {
-      console.log("❌ Callback Error:", err);
-
       next(err);
     }
   }

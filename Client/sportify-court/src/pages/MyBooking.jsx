@@ -5,7 +5,7 @@ import { ErrorAlert, SuccessAlert } from "../helpers/alert";
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [payingId, setPayingId] = useState(null);
+  // const [payingId, setPayingId] = useState(null);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -41,49 +41,49 @@ export default function MyBookings() {
     fetchBookings();
   }, []);
 
-  async function handlePay(bookingId) {
-    try {
-      setPayingId(bookingId); // loading state
-      const token = localStorage.getItem("access_token");
+  // async function handlePay(bookingId) {
+  //   try {
+  //     setPayingId(bookingId); // loading state
+  //     const token = localStorage.getItem("access_token");
 
-      const { data } = await api.post(
-        "/payments",
-        { BookingId: bookingId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+  //     const { data } = await api.post(
+  //       "/payments",
+  //       { BookingId: bookingId },
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
 
-      const snapToken = data.snapToken;
+  //     const snapToken = data.snapToken;
 
-      // Pastikan Snap sudah dimuat
-      if (!window.snap || !snapToken) {
-        throw new Error("Snap belum dimuat atau token tidak tersedia");
-      }
+  //     // Pastikan Snap sudah dimuat
+  //     if (!window.snap || !snapToken) {
+  //       throw new Error("Snap belum dimuat atau token tidak tersedia");
+  //     }
 
-      // Jalankan pembayaran popup
-      window.snap.pay(snapToken, {
-        onSuccess: function (result) {
-          SuccessAlert("Pembayaran berhasil!");
-          setTimeout(() => window.location.reload(), 1000);
-        },
-        onPending: function (result) {
-          SuccessAlert("Pembayaran menunggu konfirmasi.");
-          setTimeout(() => window.location.reload(), 1000);
-        },
-        onError: function (err) {
-          console.error(err);
-          ErrorAlert("Pembayaran gagal.");
-        },
-        onClose: function () {
-          ErrorAlert("Kamu membatalkan pembayaran.");
-        },
-      });
-    } catch (err) {
-      console.error("❌ Payment Error:", err);
-      ErrorAlert("Gagal melakukan pembayaran. Payment Failed");
-    } finally {
-      setPayingId(null);
-    }
-  }
+  //     // Jalankan pembayaran popup
+  //     window.snap.pay(snapToken, {
+  //       onSuccess: function (result) {
+  //         SuccessAlert("Pembayaran berhasil!");
+  //         setTimeout(() => window.location.reload(), 1000);
+  //       },
+  //       onPending: function (result) {
+  //         SuccessAlert("Pembayaran menunggu konfirmasi.");
+  //         setTimeout(() => window.location.reload(), 1000);
+  //       },
+  //       onError: function (err) {
+  //         console.error(err);
+  //         ErrorAlert("Pembayaran gagal.");
+  //       },
+  //       onClose: function () {
+  //         ErrorAlert("Kamu membatalkan pembayaran.");
+  //       },
+  //     });
+  //   } catch (err) {
+  //     console.error("❌ Payment Error:", err);
+  //     ErrorAlert("Gagal melakukan pembayaran. Payment Failed");
+  //   } finally {
+  //     setPayingId(null);
+  //   }
+  // }
 
   function formatDate(dateStr) {
     return new Date(dateStr).toLocaleDateString("id-ID", {
@@ -156,7 +156,7 @@ export default function MyBookings() {
                     <span className="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded-full">
                       Belum Bayar
                     </span>
-                    {b.status === "approved" && (
+                    {/* {b.status === "approved" && (
                       <div className="mt-2 flex items-center gap-2">
                         <button
                           onClick={() => handlePay(b.id)}
@@ -170,7 +170,7 @@ export default function MyBookings() {
                             : "Bayar Sekarang"}
                         </button>
                       </div>
-                    )}
+                    )} */}
                   </>
                 )}
               </div>
