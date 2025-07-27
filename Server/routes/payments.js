@@ -19,7 +19,7 @@ router.post("/midtrans/initiate", paymentController.initiateMidtransTrx); // han
 // router.put("/:id/mark-paid", paymentController.markAsPaid); // hanya untuk test manual
 // router.post("/midtrans/callback", paymentController.midtransCallback);
 
-//* error handler
+// error handler
 router.use(errorHandler);
 
 module.exports = router;
