@@ -1,8 +1,9 @@
 const { Payment, Booking, Court } = require("../models");
 const midtransClient = require("midtrans-client");
 const { signToken } = require("../helpers/jwt");
-const { Op } = require("sequelize");
+const { Op, or } = require("sequelize");
 const dayjs = require("dayjs");
+const axios = require("axios");
 
 module.exports = class paymentController {
   // static async createPayment(req, res, next) {
@@ -238,6 +239,9 @@ module.exports = class paymentController {
       // console.log("transactionToken:", transactionToken);
       // 2. create order in our database
       const { BookingId } = req.body;
+      if (!BookingId) {
+        throw { name: "InvalidInput", message: "BookingId is required" };
+      }
 
       const booking = await Booking.findOne({
         where: {
@@ -253,7 +257,7 @@ module.exports = class paymentController {
         amount,
         orderId,
       });
-      res.json({ message: "Order created", transactionToken });
+      res.json({ message: "Order created", transactionToken, orderId });
     } catch (err) {
       console.log("❌ INITIATE MIDTRANS TRX ERROR:");
       console.dir(err, { depth: null });
@@ -262,26 +266,32 @@ module.exports = class paymentController {
   }
 
   static async upgradeAccount(req, res, next) {
+    // check orderId, order ke midtrans, apakah sudah dibayar atau belum
     try {
-      const userId = req.user.id;
+      const { orderId } = req.body;
 
       // Cek apakah user sudah pernah upgrade
-      const existingPayment = await Payment.findOne({
+      const order = await Payment.findOne({
         where: {
-          UserId: userId,
-          status: "paid",
-          createdAt: {
-            [Op.gte]: dayjs().subtract(1, "month").toDate(),
-          },
+          orderId,
         },
       });
+      console.log("🔍 Order:", order);
+      // if(!order){
+      //   throw
+      // }
 
-      if (existingPayment) {
-        return res.status(400).json({
-          message:
-            "You have already upgraded your account within the last month.",
-        });
-      }
+      const serverKey = process.env.MIDTRANS_SERVER_KEY;
+      const base64ServerKey = Buffer.from(serverKey + ":").toString("base64");
+      const response = await axios.get(
+        `https://api.sandbox.midtrans.com/v2/${orderId}/status`,
+        {
+          headers: {
+            Authorization: `Basic ${base64ServerKey}`,
+          },
+        }
+      );
+      console.log("📦 Midtrans Response:", response.data);
 
       // Proses upgrade akun
       // ... (logika upgrade akun)

@@ -2,26 +2,46 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Menu, X } from "lucide-react";
+import { api } from "../helpers/http-client";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState(null);
+  const [name, setName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     const userRole = localStorage.getItem("role"); // pastikan role disimpan di localStorage saat login
+    const name = localStorage.getItem("name"); // ambil nama user dari localStorage
     setIsLoggedIn(!!token);
     setRole(userRole);
+    setName(name);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("role");
+    localStorage.removeItem("name");
     setIsLoggedIn(false);
     setRole(null);
+    setName("");
     navigate("/auth/login");
+  };
+
+  const handleUpgrade = async () => {
+    // Trigger snap popup. @TODO: Replace TRANSACTION_TOKEN_HERE with your transaction token
+    const { data } = await api.post("/payments/midtrans/initiate");
+    window.snap.pay(data.transactionToken, {
+      onSuccess: async function (result) {
+        /* You may add your own implementation here */
+        console.log(result);
+        await api.patch("/payments/me/upgrade", {
+          orderId: data.orderId,
+        });
+      },
+    });
   };
 
   const navItem = (label, path) => (
@@ -50,6 +70,11 @@ export default function Navbar() {
             Sportify
           </span>
         </div>
+        <div>
+          <span className="text-gray-700 font-medium">
+            {isLoggedIn ? `Welcome, ${name || "User"}` : "Welcome, Guest"}
+          </span>
+        </div>
 
         {/* Desktop menu */}
         <div className="hidden md:flex space-x-6 items-center font-medium text-gray-700">
@@ -58,12 +83,20 @@ export default function Navbar() {
           {isLoggedIn && navItem("Booking History", "/bookings/mine")}
           {isLoggedIn && role === "admin" && navItem("Admin Panel", "/admin")}
           {isLoggedIn ? (
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleUpgrade}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              >
+                Upgrade
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+              >
+                Logout
+              </button>
+            </div>
           ) : (
             <button
               onClick={() => navigate("/login")}
@@ -90,12 +123,21 @@ export default function Navbar() {
           {isLoggedIn && navItem("Booking History", "/booking-history")}
           {isLoggedIn && role === "admin" && navItem("Admin Panel", "/admin")}
           {isLoggedIn ? (
-            <button
-              onClick={handleLogout}
-              className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
+            (
+              <button
+                onClick={handleUpgrade}
+                className="w-full bg-red-500 text-white py-2 rounded hover:bg-blue-600 transition"
+              >
+                Upgrade
+              </button>
+            ) && (
+              <button
+                onClick={handleLogout}
+                className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition"
+              >
+                Logout
+              </button>
+            )
           ) : (
             <button
               onClick={() => navigate("/auth/login")}

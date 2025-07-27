@@ -1,3 +1,15 @@
+<!--
+README Documentation: Sportify Court
+
+Sportify Court adalah aplikasi web untuk booking lapangan olahraga (futsal, badminton, basket, dll) secara online. Fitur utama meliputi pencarian lapangan, booking jadwal, pembayaran digital, rekomendasi AI, notifikasi realtime, dan dashboard admin. Stack teknologi: Express.js, React + Redux, PostgreSQL, Stripe/Midtrans, OpenAI/Gemini, Socket.IO, Nodemailer.
+
+Struktur folder backend dan frontend dijelaskan lengkap, beserta ERD database (Users, Categories, Courts, Bookings, Payments) dan relasi antar tabel. Terdapat rencana kerja harian, flow API booking & payment, serta dokumentasi endpoint RESTful (auth, users, categories, courts, bookings, upload, AI, webhook).
+
+Disediakan juga contoh prompt AI, user flow end-to-end, setup project (Express, Sequelize, Vite, React), konfigurasi environment (.env), dan instruksi deploy ke Vercel/Render/Firebase Hosting.
+
+Dokumentasi ini menjadi panduan lengkap untuk pengembangan, setup, dan deployment aplikasi Sportify Court.
+-->
+
 ### IP-RMT63
 
 # Sportify Court
@@ -543,4 +555,74 @@ firebase deploy
 ```bash
 npm run build
 firebase deploy
+```
+
+# Setup Project SERVER
+
+1. Init project express, install deps
+
+```bash
+npm init -y
+npm i express sequelize pg bcryptjs jsonwebtoken
+npm i -D jest supertest sequelize-cli nodemon
+```
+
+2. Init sequelize, (ubah config nya untuk dev dan test environment) -> `postgres`
+
+```bash
+npx sequelize init
+touch .gitignore
+```
+
+3. bikin migration, model
+
+```bash
+npx sequelize model:create --name User --attributes email:string,password:string
+npx sequelize model:create --name Grocery --attributes title:string,price:integer,tag:string,imageUrl:string,UserId:integer
+```
+
+4. setup validation, constraint (optional)
+
+   - tambahkan unique dan allowNull false
+   - model validation
+
+5. setup association
+
+   - one to many
+
+6. bikin seeders -> edit file seed
+
+```bash
+npx sequelize seed:create --name data
+```
+
+7. migrate and seed
+
+```bash
+npx sequelize db:create
+npx sequelize db:migrate
+npx sequelize db:seed:all
+```
+
+8. hello world express
+9. Setup test -> samakan dengan development (`tambah "_test" di db`)
+
+- package.json (script) :
+  "test"-> "jest"
+  "dev" -> "nodemon bin/www" (export app dari app.js)
+
+10. testing
+
+```bash
+npx sequelize --env test db:create
+npx sequelize --env test db:migrate
+```
+
+# SETUP CLIENT
+
+```bash
+npm create vite@latest
+cd sportify-court
+npm i axios react-router
+npm run dev
 ```

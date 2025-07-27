@@ -20,11 +20,13 @@ export default function Login() {
       console.log("🚀 ~ response:", response);
       const access_token = response.data?.access_token;
       const role = response.data?.user?.role;
+      const name = response.data?.user?.name;
       if (!access_token) {
         throw new Error("Token tidak ditemukan. Cek struktur response.");
       }
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("role", role);
+      localStorage.setItem("name", name);
 
       SuccessAlert("Login berhasil!");
       if (role === "admin") {
@@ -50,11 +52,13 @@ export default function Login() {
       console.log("🚀 ~ Google Login Response:", res);
       const access_token = res.data?.access_token;
       const role = res.data?.user?.role;
+      const nameUser = res.data?.user?.name;
       if (!access_token) {
         throw new Error("Token tidak ditemukan. Cek struktur response.");
       }
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("role", role);
+      localStorage.setItem("name", nameUser);
       console.log("🚀 ~ Google Login Role:", role);
       const name = localStorage.getItem("name");
       console.log("🚀 ~ handleCredentialResponse ~ name:", name);
