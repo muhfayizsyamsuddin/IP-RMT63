@@ -4,17 +4,19 @@ const authentication = require("../middleware/authentication");
 const paymentController = require("../controllers/paymentController");
 const errorHandler = require("../middleware/errorHandler");
 
-router.post(
-  "/midtrans/callback",
-  express.raw({ type: "*/*" }),
-  paymentController.midtransCallback
-);
+// router.post(
+//   "/midtrans/callback",
+//   express.raw({ type: "*/*" }),
+//   paymentController.midtransCallback
+// );
 
 router.use(authentication);
 
-router.post("/", paymentController.createPayment); // hanya user yang login
-router.get("/mine", paymentController.getMyPayments);
-router.put("/:id/mark-paid", paymentController.markAsPaid); // hanya untuk test manual
+// router.post("/", paymentController.createPayment); // hanya user yang login
+// router.get("/mine", paymentController.getMyPayments);
+router.patch("/me/upgrade", paymentController.upgradeAccount); // hanya user yang login
+router.post("/midtrans/initiate", paymentController.initiateMidtransTrx); // hanya untuk test manual
+// router.put("/:id/mark-paid", paymentController.markAsPaid); // hanya untuk test manual
 // router.post("/midtrans/callback", paymentController.midtransCallback);
 
 //* error handler

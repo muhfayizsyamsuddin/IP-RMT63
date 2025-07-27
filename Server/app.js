@@ -20,10 +20,10 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 
 // ⚠️ PENTING: PASANG RAW BODY HANYA UNTUK MIDTRANS CALLBACK
-app.use(
-  "/payments/midtrans/callback",
-  express.raw({ type: "*/*" }) // Midtrans butuh raw body
-);
+// app.use(
+//   "/payments/midtrans/callback",
+//   express.raw({ type: "*/*" }) // Midtrans butuh raw body
+// );
 // app.get("/", (req, res) => {
 //   res.status(200).json({ message: "its my life" });
 // });
