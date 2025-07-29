@@ -422,9 +422,7 @@ touch .gitignore
 ```
 
 a. membuat .env
-Isi .env biasanya: - Password database - API key (contoh: OpenAI, Midtrans) - Secret JWT token - Konfigurasi server
-
-3. bikin migration, model
+Isi .env biasanya: - Password database - API key (contoh: OpenAI, Midtrans) - Secret JWT token - Konfigurasi server 3. bikin migration, model
 
 ```bash
 npx sequelize-cli model:generate --name User --attributes name:string,email:string,password:string,role:string
@@ -434,14 +432,10 @@ npx sequelize-cli model:generate --name Payment --attributes bookingId:integer,a
 ```
 
 4. setup validation, constraint (optional)
-
    - tambahkan unique dan allowNull false
    - model validation
-
 5. setup association
-
    - one to many
-
 6. bikin seeders -> edit file seed
 
 ```bash
@@ -517,7 +511,6 @@ npm run dev
 ```bash
 npm install google-auth-library --save
 npm install midtrans-client
-
 ```
 
 Server Key=
@@ -582,14 +575,10 @@ npx sequelize model:create --name Grocery --attributes title:string,price:intege
 ```
 
 4. setup validation, constraint (optional)
-
    - tambahkan unique dan allowNull false
    - model validation
-
 5. setup association
-
    - one to many
-
 6. bikin seeders -> edit file seed
 
 ```bash
