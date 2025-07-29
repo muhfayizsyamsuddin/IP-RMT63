@@ -32,16 +32,35 @@ export default function Navbar() {
 
   const handleUpgrade = async () => {
     // Trigger snap popup. @TODO: Replace TRANSACTION_TOKEN_HERE with your transaction token
-    const { data } = await api.post("/payments/midtrans/initiate");
-    window.snap.pay(data.transactionToken, {
-      onSuccess: async function (result) {
-        /* You may add your own implementation here */
-        console.log(result);
-        await api.patch("/payments/me/upgrade", {
-          orderId: data.orderId,
-        });
-      },
-    });
+    try {
+      const bookingRes = await api.get("/bookings/mine");
+      const bookingId = bookingRes.data?.[0]?.id;
+
+      if (!bookingId) {
+        alert("You need to have a booking to upgrade!");
+        return;
+      }
+      const { data } = await api.post("/payments/midtrans/initiate", {
+        BookingId: bookingId,
+      });
+      window.snap.pay(data.transactionToken, {
+        onSuccess: async function (result) {
+          /* You may add your own implementation here */
+          console.log("Payment Success:", result);
+          await api.patch("/payments/me/upgrade", {
+            orderId: data.orderId,
+          });
+          alert("Account upgraded successfully!");
+        },
+        onError: function (error) {
+          console.error("Payment Error:", error);
+          alert("Payment failed. Please try again.");
+        },
+      });
+    } catch (err) {
+      console.error("Upgrade Error:", err.response || err.message);
+      alert("Failed to initiate upgrade. Please try again.");
+    }
   };
 
   const navItem = (label, path) => (

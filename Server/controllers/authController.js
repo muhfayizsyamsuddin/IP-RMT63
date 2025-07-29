@@ -90,7 +90,6 @@ module.exports = class authController {
           role: "user",
         });
       }
-
       const access_token = signToken({ id: user.id, role: user.role });
       res.status(200).json({
         message: "Google Login Success",

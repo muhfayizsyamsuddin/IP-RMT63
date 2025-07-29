@@ -1,4 +1,6 @@
 // server.js
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
 require("dotenv").config();
 const app = require("./app");
 

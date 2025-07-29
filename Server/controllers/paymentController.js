@@ -209,11 +209,40 @@ module.exports = class paymentController {
 
   static async initiateMidtransTrx(req, res, next) {
     try {
+      if (!process.env.MIDTRANS_SERVER_KEY) {
+        throw {
+          name: "ServerError",
+          message: "MIDTRANS_SERVER_KEY is missing",
+        };
+      }
+      console.log("MIDTRANS_SERVER_KEY:", process.env.MIDTRANS_SERVER_KEY);
       let snap = new midtransClient.Snap({
         // Set to true if you want Production Environment (accept real transaction).
         isProduction: false,
         serverKey: process.env.MIDTRANS_SERVER_KEY,
+        clientKey: process.env.MIDTRANS_CLIENT_KEY,
       });
+      console.log("Request Body:", req.body);
+      const { BookingId } = req.body;
+      if (!BookingId) {
+        throw { name: "InvalidInput", message: "BookingId is required" };
+      }
+      console.log("User ID:", req.user.id);
+      console.log("Booking ID:", req.body.BookingId);
+      if (!req.body.BookingId) {
+        return res.status(400).json({ message: "BookingId is required" });
+      }
+
+      // Cari booking berdasarkan BookingId dan UserId
+      const booking = await Booking.findOne({
+        where: {
+          id: BookingId,
+          UserId: req.user.id,
+        },
+      });
+
+      if (!booking) throw new Error("Booking not found");
+
       const orderId = `BOOK-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const amount = 10000;
       let parameter = {
@@ -232,25 +261,17 @@ module.exports = class paymentController {
           email: req.user.email,
         },
       };
-      // 1.create transaction to midtrans
-      const transaction = await snap.createTransaction(parameter);
-      // transaction token
-      let transactionToken = transaction.token;
-      // console.log("transactionToken:", transactionToken);
-      // 2. create order in our database
-      const { BookingId } = req.body;
-      if (!BookingId) {
-        throw { name: "InvalidInput", message: "BookingId is required" };
+      try {
+        // 1.create transaction to midtrans
+        const transaction = await snap.createTransaction(parameter);
+        // transaction token
+        let transactionToken = transaction.token;
+        // console.log("transactionToken:", transactionToken);
+      } catch (err) {
+        console.error("Midtrans Error:", err.response?.data || err.message);
+        throw err;
       }
-
-      const booking = await Booking.findOne({
-        where: {
-          id: BookingId,
-          UserId: req.user.id,
-        },
-      });
-
-      if (!booking) throw new Error("Booking not found");
+      // 2. create order in our database
 
       await Payment.create({
         BookingId: booking.id,
@@ -277,12 +298,12 @@ module.exports = class paymentController {
         },
       });
       console.log("🔍 Order:", order);
-      // if(!order){
-      //   throw
-      // }
+      console.log("Headers:", req.headers);
+      console.log("Authorization Header:", req.headers.authorization);
 
       const serverKey = process.env.MIDTRANS_SERVER_KEY;
       const base64ServerKey = Buffer.from(serverKey + ":").toString("base64");
+      console.log(`Authorization: Basic ${base64ServerKey}`);
       const response = await axios.get(
         `https://api.sandbox.midtrans.com/v2/${orderId}/status`,
         {

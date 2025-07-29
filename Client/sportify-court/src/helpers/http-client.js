@@ -1,8 +1,11 @@
 // src/helpers/http-client.js
 import axios from "axios";
 
+// export const api = axios.create({
+//   baseURL: "http://localhost:3000",
+// });
 export const api = axios.create({
-  baseURL: "https://api.faizms.com",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 // export const apiPrivate = axios.create({
@@ -15,6 +18,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  console.log(">>> Axios Config:", config);
   return config;
 });
 // apiPrivate.interceptors.request.use((config) => {

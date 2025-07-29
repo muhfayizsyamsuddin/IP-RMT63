@@ -44,7 +44,6 @@ export default function Login() {
 
   async function handleCredentialResponse(response) {
     console.log("Encoded JWT ID token: " + response.credential);
-
     try {
       const res = await api.post("/auth/login/google", {
         id_token: response.credential,
