@@ -7,8 +7,8 @@ import { SuccessAlert, ErrorAlert } from "../helpers/alert";
 export default function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("user@sportify.com");
-  const [password, setPassword] = useState("12345678");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,7 +61,7 @@ export default function Login() {
       console.log("🚀 ~ Google Login Role:", role);
       const nameUser = localStorage.getItem("name");
       console.log("🚀 ~ handleCredentialResponse ~ name:", nameUser);
-      localStorage.setItem("name", response.data?.user?.name);
+      // localStorage.setItem("name", response.data?.user?.name);
       if (role === "admin") {
         navigate("/admin/bookings");
       } else {

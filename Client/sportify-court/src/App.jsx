@@ -10,8 +10,8 @@ import PublicCourtDetail from "./pages/CourtDetail";
 import BookingForm from "./pages/CreateBooking";
 import AllBookings from "./pages/AllBookings";
 import ProtectedRoute from "./components/ProtectedRoutes";
-import { store } from "./app/store";
-// import { Provider, useDispatch, useSelector } from "react-redux";
+import { store } from "./store";
+import { Provider } from "react-redux";
 
 function App() {
   // const count = useSelector((state) => state.counter.value);

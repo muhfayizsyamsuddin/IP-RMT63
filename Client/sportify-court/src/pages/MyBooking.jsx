@@ -41,11 +41,11 @@ export default function MyBookings() {
     fetchBookings();
   }, []);
 
-  const handlePayment = async () => {
+  const handlePayment = async (bookingId) => {
     // Trigger snap popup. @TODO: Replace TRANSACTION_TOKEN_HERE with your transaction token
     try {
-      const bookingRes = await api.get("/bookings/mine");
-      const bookingId = bookingRes.data?.[0]?.id;
+      // const bookingRes = await api.get("/bookings/mine");
+      // const bookingId = bookingRes.data?.[0]?.id;
 
       if (!bookingId) {
         ErrorAlert("No booking found to pay for.");
@@ -65,6 +65,8 @@ export default function MyBookings() {
               orderId: data.orderId,
             });
             SuccessAlert("Payment successful!");
+            const res = await api.get("/bookings/mine");
+            setBookings(res.data);
           },
           onError: function (error) {
             console.error("Payment Error:", error);
