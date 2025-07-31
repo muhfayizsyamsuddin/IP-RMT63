@@ -8,6 +8,9 @@ const axios = require("axios");
 module.exports = class paymentController {
   static async initiateMidtransTrx(req, res, next) {
     try {
+      console.log("Request Headers:", req.headers);
+      console.log("Request Body:", req.body);
+
       if (!process.env.MIDTRANS_SERVER_KEY) {
         throw {
           name: "ServerError",
@@ -31,7 +34,11 @@ module.exports = class paymentController {
       if (!req.body.BookingId) {
         return res.status(400).json({ message: "BookingId is required" });
       }
-
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ message: "Unauthorized: user not found" });
+      }
       // Cari booking berdasarkan BookingId dan UserId
       const booking = await Booking.findOne({
         where: {

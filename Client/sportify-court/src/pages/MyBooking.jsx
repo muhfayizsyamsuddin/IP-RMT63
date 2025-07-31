@@ -51,6 +51,8 @@ export default function MyBookings() {
         ErrorAlert("No booking found to pay for.");
         return;
       }
+      console.log(localStorage.getItem("access_token"));
+      console.log("TOKEN DARI LOCAL:", localStorage.getItem("access_token"));
       const { data } = await api.post("/payments/midtrans/initiate", {
         BookingId: bookingId,
       });
