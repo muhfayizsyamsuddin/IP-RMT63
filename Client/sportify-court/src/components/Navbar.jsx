@@ -32,39 +32,6 @@ export default function Navbar() {
     navigate("/auth/login");
   };
 
-  // const handleUpgrade = async () => {
-  //   // Trigger snap popup. @TODO: Replace TRANSACTION_TOKEN_HERE with your transaction token
-  //   try {
-  //     const bookingRes = await api.get("/bookings/mine");
-  //     const bookingId = bookingRes.data?.[0]?.id;
-
-  //     if (!bookingId) {
-  //       alert("You need to have a booking to upgrade!");
-  //       return;
-  //     }
-  //     const { data } = await api.post("/payments/midtrans/initiate", {
-  //       BookingId: bookingId,
-  //     });
-  //     window.snap.pay(data.transactionToken, {
-  //       onSuccess: async function (result) {
-  //         /* You may add your own implementation here */
-  //         console.log("Payment Success:", result);
-  //         await api.patch("/payments/me/upgrade", {
-  //           orderId: data.orderId,
-  //         });
-  //         alert("Account upgraded successfully!");
-  //       },
-  //       onError: function (error) {
-  //         console.error("Payment Error:", error);
-  //         alert("Payment failed. Please try again.");
-  //       },
-  //     });
-  //   } catch (err) {
-  //     console.error("Upgrade Error:", err.response || err.message);
-  //     alert("Failed to initiate upgrade. Please try again.");
-  //   }
-  // };
-
   const navItem = (label, path) => (
     <span
       onClick={() => navigate(path)}
@@ -100,7 +67,6 @@ export default function Navbar() {
           </div>
         </div>
         <div className="hidden md:flex space-x-6 items-center font-medium text-gray-700">
-          {navItem("Home", "/")}
           {navItem("Courts", "/")}
           {isLoggedIn && navItem("Booking History", "/bookings/mine")}
           {isLoggedIn &&
@@ -135,7 +101,6 @@ export default function Navbar() {
       {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden bg-white shadow-md px-4 pb-4 space-y-2 text-gray-700 font-medium">
-          {navItem("Home", "/")}
           {navItem("Courts", "/courts")}
           {isLoggedIn && navItem("Booking History", "/booking-history")}
           {isLoggedIn && role === "admin" && navItem("Admin Panel", "/admin")}

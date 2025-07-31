@@ -51,16 +51,16 @@ export default function Login() {
       console.log("🚀 ~ Google Login Response:", res);
       const access_token = res.data?.access_token;
       const role = res.data?.user?.role;
-      const nameUser = res.data?.user?.name;
+      const name = res.data?.user?.name;
       if (!access_token) {
         throw new Error("Token tidak ditemukan. Cek struktur response.");
       }
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("role", role);
-      localStorage.setItem("name", nameUser);
+      localStorage.setItem("name", name);
       console.log("🚀 ~ Google Login Role:", role);
-      const name = localStorage.getItem("name");
-      console.log("🚀 ~ handleCredentialResponse ~ name:", name);
+      const nameUser = localStorage.getItem("name");
+      console.log("🚀 ~ handleCredentialResponse ~ name:", nameUser);
       localStorage.setItem("name", response.data?.user?.name);
       if (role === "admin") {
         navigate("/admin/bookings");

@@ -56,6 +56,46 @@ module.exports = class bookingController {
     try {
       const userId = req.user.id;
       const { CourtId, date, timeStart, timeEnd } = req.body;
+
+      // Check if court exists
+      const court = await Court.findByPk(CourtId);
+      if (!court) {
+        throw { name: "NotFound", message: "Court not found" };
+      }
+
+      // Check for overlapping bookings
+      const existingBooking = await Booking.findOne({
+        where: {
+          CourtId,
+          date,
+          status: { [require("sequelize").Op.ne]: "cancelled" }, // exclude cancelled bookings
+          [require("sequelize").Op.or]: [
+            // New booking starts during existing booking
+            {
+              timeStart: { [require("sequelize").Op.lte]: timeStart },
+              timeEnd: { [require("sequelize").Op.gt]: timeStart },
+            },
+            // New booking ends during existing booking
+            {
+              timeStart: { [require("sequelize").Op.lt]: timeEnd },
+              timeEnd: { [require("sequelize").Op.gte]: timeEnd },
+            },
+            // New booking completely contains existing booking
+            {
+              timeStart: { [require("sequelize").Op.gte]: timeStart },
+              timeEnd: { [require("sequelize").Op.lte]: timeEnd },
+            },
+          ],
+        },
+      });
+
+      if (existingBooking) {
+        throw {
+          name: "BadRequest",
+          message: "Booking time overlaps with existing booking",
+        };
+      }
+
       const booking = await Booking.create({
         CourtId,
         UserId: userId,
@@ -68,13 +108,22 @@ module.exports = class bookingController {
       next(err);
     }
   }
-  //* Update Booking (admin)
+  //* Update Booking (user can update their own, admin can update any)
   static async updateBooking(req, res, next) {
     try {
       const { id } = req.params;
       const { date, timeStart, timeEnd, status } = req.body;
       const booking = await Booking.findByPk(id);
       if (!booking) throw { name: "NotFound", message: "Booking not found" };
+
+      // Check if user owns this booking (unless admin)
+      if (req.user.role !== "admin" && booking.UserId !== req.user.id) {
+        throw {
+          name: "Forbidden",
+          message: "You can only update your own bookings",
+        };
+      }
+
       //* Validasi hanya boleh update booking dengan status pending
       if (booking.status !== "pending") {
         throw {

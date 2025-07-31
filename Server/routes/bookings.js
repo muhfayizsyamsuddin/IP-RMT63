@@ -9,6 +9,7 @@ router.use(authentication);
 // USER
 router.get("/mine", bookingController.getMyBookings);
 router.post("/", bookingController.createBooking);
+router.patch("/:id", bookingController.updateBooking); // Allow user to update their own booking
 
 // ADMIN
 router.get("/", isAdmin, bookingController.getAllBookings);

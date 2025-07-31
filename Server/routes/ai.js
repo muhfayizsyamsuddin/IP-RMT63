@@ -1,5 +1,6 @@
 const express = require("express");
 const { askGemini } = require("../helpers/AskGemini");
+const errorHandler = require("../middleware/errorHandler");
 
 const router = express.Router();
 
@@ -16,5 +17,7 @@ router.post("/recommend", async (req, res, next) => {
     next(err);
   }
 });
+
+router.use(errorHandler);
 
 module.exports = router;

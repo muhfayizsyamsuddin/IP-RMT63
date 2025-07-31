@@ -4,9 +4,11 @@ import { api } from "../helpers/http-client";
 import { Link } from "react-router";
 import CourtCard from "../components/CourtCard";
 import Navbar from "../components/Navbar";
+// import { useSelector, } from "react-redux";
 // import App from "./App.jsx";
 
 export default function PublicCourts() {
+  // const { courts } = useSelector((state) => state.court);
   const [courts, setCourts] = useState([]);
   const [pagination, setPagination] = useState({});
   const [search, setSearch] = useState("");
