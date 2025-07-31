@@ -1,13 +1,13 @@
 // src/helpers/http-client.js
 import axios from "axios";
 
+export const api = axios.create({
+  baseURL: "https://api.faizms.com",
+});
 // export const api = axios.create({
+//   // baseURL: import.meta.env.VITE_API_BASE_URL,
 //   baseURL: "http://localhost:3000",
 // });
-export const api = axios.create({
-  // baseURL: import.meta.env.VITE_API_BASE_URL,
-  baseURL: "http://localhost:3000",
-});
 
 // export const apiPrivate = axios.create({
 //   baseURL: "http://localhost:3000",
