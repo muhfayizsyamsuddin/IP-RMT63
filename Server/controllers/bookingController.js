@@ -14,8 +14,6 @@ module.exports = class bookingController {
             model: Payment,
             attributes: ["status", "paidAt"],
             required: false,
-            limit: 1,
-            order: [["createdAt", "DESC"]],
           },
         ],
       });
