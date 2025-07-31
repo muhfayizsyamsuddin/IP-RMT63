@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { api } from "../helpers/http-client";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { SuccessAlert, ErrorAlert } from "../helpers/alert";
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("user@sportify.com");
+  const [password, setPassword] = useState("12345678");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +28,7 @@ export default function Login() {
       localStorage.setItem("role", role);
       localStorage.setItem("name", name);
 
-      SuccessAlert("Login berhasil!");
+      SuccessAlert("Login successful!");
       if (role === "admin") {
         navigate("/admin/bookings");
       } else {
@@ -67,12 +67,12 @@ export default function Login() {
       } else {
         navigate("/public/courts");
       }
-      SuccessAlert("Login berhasil!");
+      SuccessAlert("Google Login successful!");
     } catch (err) {
       console.error("❌ Google Login Error:", err);
       const errors =
         err.response?.data?.message || err.message || "Something went wrong!";
-      ErrorAlert(errors, "Login Failed");
+      ErrorAlert(errors, "Google Login Failed");
     }
   }
   useEffect(() => {
@@ -132,21 +132,21 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition duration-150"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white"
           >
             Login
           </button>
         </form>
         <div className="mt-6 text-center">
-          <div id="buttonDiv"></div>
+          <div id="buttonDiv" className="relative inline-block"></div>
         </div>
 
-        {/* <p className="text-sm text-center text-gray-500 mt-4">
-          Belum punya akun?{" "}
-          <a href="/pub/courts" className="text-blue-600 hover:underline">
-            Daftar di sini
-          </a>
-        </p> */}
+        <p className="text-sm text-center text-gray-500 mt-4">
+          Don’t have an account?{" "}
+          <Link to="/auth/register" className="text-blue-600 hover:underline">
+            Register here
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ export default function AllBookings() {
       });
       setShowCancelModal(false);
       fetchBookings();
-      SuccessAlert("Booking berhasil dibatalkan!");
+      SuccessAlert("Bookings cancelled successfully!");
     } catch (err) {
       console.error("Gagal cancel:", err);
       const errors =
@@ -56,7 +56,7 @@ export default function AllBookings() {
         status: "approved",
       });
       fetchBookings();
-      SuccessAlert("Booking berhasil disetujui!");
+      SuccessAlert("Booking approved successfully!");
     } catch (err) {
       console.error("Gagal approve:", err);
       const errors =
@@ -78,7 +78,7 @@ export default function AllBookings() {
 
       setShowEditModal(false);
       fetchBookings();
-      SuccessAlert("Booking berhasil diupdate!");
+      SuccessAlert("Booking updated successfully!");
     } catch (err) {
       console.error("Gagal update booking:", err);
       const errors =
@@ -88,103 +88,121 @@ export default function AllBookings() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 bg-white shadow rounded space-y-6 text-gray-800">
-      <div className="max-w-6xl mx-auto px-4 py-8 bg-white shadow rounded space-y-6 text-gray-800">
-        <h2 className="text-2xl font-bold mb-4">📋 Semua Booking</h2>
-        <div className="flex justify-between items-center mb-4">
-          <select
-            className="border rounded px-4 py-2 w-full sm:w-auto text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          >
-            <option value="">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
+    <div className="max-w-6xl mx-auto px-6 py-10 bg-white shadow-lg rounded-xl space-y-8 text-gray-900">
+      <div>
+        <h2 className="text-3xl font-extrabold mb-6 text-gray-800 flex items-center justify-center gap-2">
+          All Bookings
+        </h2>
+        <div className="flex-1 flex flex-col gap-2 sm:flex-row sm:items-center mb-6">
+          <div className="w-full sm:w-1/3">
+            <select
+              className="border border-blue-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-900 shadow-sm"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
         </div>
         {bookings.length === 0 ? (
-          <p className="text-gray-500">Belum ada booking.</p>
+          <div className="py-10 text-center text-gray-500 text-lg">
+            Belum ada booking.
+          </div>
         ) : (
-          <table className="w-full border text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-2 border">#</th>
-                <th className="p-2 border">User</th>
-                <th className="p-2 border">Court</th>
-                <th className="p-2 border">Tanggal</th>
-                <th className="p-2 border">Waktu</th>
-                <th className="p-2 border">Pembayaran</th>
-                <th className="p-2 border">Status</th>
-                <th className="p-2 border">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((b, i) => (
-                <tr key={b.id} className="text-center">
-                  <td className="p-2 border">{i + 1}</td>
-                  <td className="p-2 border">{b.User?.email}</td>
-                  <td className="p-2 border">{b.Court?.name}</td>
-                  <td className="p-2 border">
-                    {new Date(b.date).toLocaleDateString("id-ID")}
-                  </td>
-                  <td className="p-2 border">
-                    {b.timeStart} - {b.timeEnd}
-                  </td>
-                  <td className="p-2 border">
-                    {b.isPaid ? (
-                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
-                        Paid
-                      </span>
-                    ) : (
-                      <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded">
-                        Belum Bayar
-                      </span>
-                    )}
-                  </td>
-                  <td className="p-2 border">
-                    <span
-                      className={
-                        b.status === "approved"
-                          ? "text-green-600 font-semibold"
-                          : b.status === "cancelled"
-                          ? "text-red-600 font-semibold"
-                          : "bg-yellow-100 text-yellow-600 text-xs font-medium px-2 py-1 rounded"
-                      }
-                    >
-                      {b.status}
-                    </span>
-                  </td>
-                  <td className="p-2 border flex justify-center items-center gap-2">
-                    {b.status === "pending" && (
-                      <button
-                        onClick={() => openEditModal(b)}
-                        className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-xs mr-2"
-                      >
-                        Edit
-                      </button>
-                    )}
-                    {b.status !== "cancelled" && (
-                      <button
-                        onClick={() => handleCancelClick(b.id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs"
-                      >
-                        Cancel
-                      </button>
-                    )}
-                    {b.status === "pending" && (
-                      <button
-                        onClick={() => handleApprove(b.id)}
-                        className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 text-xs mr-1"
-                      >
-                        Approve
-                      </button>
-                    )}
-                  </td>
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <table className="min-w-full bg-white text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="p-3 border-b font-semibold text-left">#</th>
+                  <th className="p-3 border-b font-semibold text-left">User</th>
+                  <th className="p-3 border-b font-semibold text-left">
+                    Court
+                  </th>
+                  <th className="p-3 border-b font-semibold text-left">Date</th>
+                  <th className="p-3 border-b font-semibold text-left">Time</th>
+                  <th className="p-3 border-b font-semibold text-left">
+                    Payment
+                  </th>
+                  <th className="p-3 border-b font-semibold text-left">
+                    Status
+                  </th>
+                  <th className="p-3 border-b font-semibold text-center">
+                    Action
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {bookings.map((b, i) => (
+                  <tr key={b.id} className="hover:bg-gray-50 transition">
+                    <td className="p-3 border-b">{i + 1}</td>
+                    <td className="p-3 border-b">{b.User?.email}</td>
+                    <td className="p-3 border-b">{b.Court?.name}</td>
+                    <td className="p-3 border-b">
+                      {new Date(b.date).toLocaleDateString("id-ID")}
+                    </td>
+                    <td className="p-3 border-b">
+                      {b.timeStart} - {b.timeEnd}
+                    </td>
+                    <td className="p-3 border-b">
+                      {b.isPaid ? (
+                        <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full border border-green-200">
+                          Paid
+                        </span>
+                      ) : (
+                        <span className="inline-block bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full border border-red-200">
+                          Belum Bayar
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3 border-b">
+                      <span
+                        className={
+                          b.status === "approved"
+                            ? "inline-block bg-green-50 text-green-700 font-semibold px-3 py-1 rounded-full border border-green-200"
+                            : b.status === "cancelled"
+                            ? "inline-block bg-red-50 text-red-700 font-semibold px-3 py-1 rounded-full border border-red-200"
+                            : "inline-block bg-yellow-50 text-yellow-700 font-semibold px-3 py-1 rounded-full border border-yellow-200"
+                        }
+                      >
+                        {b.status.charAt(0).toUpperCase() + b.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="p-3 border-b text-center">
+                      <div className="flex justify-center items-center gap-2">
+                        {b.status === "pending" && (
+                          <button
+                            onClick={() => openEditModal(b)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-xs font-medium shadow transition"
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {b.status !== "cancelled" && (
+                          <button
+                            onClick={() => handleCancelClick(b.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-xs font-medium shadow transition"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        {b.status === "pending" && (
+                          <button
+                            onClick={() => handleApprove(b.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-medium shadow transition"
+                          >
+                            Approve
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         {showEditModal && selectedBooking && (
           <EditBookingModal

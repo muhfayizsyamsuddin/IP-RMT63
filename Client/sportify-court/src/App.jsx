@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router";
 import HomePage from "./pages/HomePage";
 import "./App.css";
-// import Register from "./pages/Register";
+import Register from "./pages/Register";
 import Login from "./pages/Login";
 import PublicCourts from "./pages/PublicCourts";
 import AuthenticatedLayout from "./layout/AuthenLayout";
@@ -19,7 +19,7 @@ function App() {
         {/* Public */}
         <Route path="/public/courts" element={<PublicCourts />} />
         <Route path="/public/courts/:id" element={<PublicCourtDetail />} />
-        {/* <Route path="/auth/register" element={<Register />} /> */}
+        <Route path="/auth/register" element={<Register />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/" element={<AuthenticatedLayout />}>
           {/* Protected Layout */}

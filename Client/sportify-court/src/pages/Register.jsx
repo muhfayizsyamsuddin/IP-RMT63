@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../helpers/http-client";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { ErrorAlert, SuccessAlert } from "../helpers/alert";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -12,17 +13,19 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log("Register Payload:", { name, email, password });
       await api.post("auth/register", {
         name,
         email,
         password,
       });
-
-      alert("Register berhasil! Silakan login.");
+      SuccessAlert("Registration successful!");
       navigate("/auth/login");
     } catch (err) {
       console.error("Register Error:", err);
-      alert("Gagal register. Coba lagi.");
+      const errors =
+        err.response?.data?.message || err.message || "Something went wrong!";
+      ErrorAlert(errors, "Register Failed");
     }
   };
 
@@ -38,7 +41,7 @@ export default function Register() {
           />
           <h2 className="text-2xl font-bold text-gray-800">Create Account</h2>
           <p className="text-sm text-gray-500">
-            Daftar untuk mulai booking lapangan
+            Create your account to start booking courts
           </p>
         </div>
 
@@ -50,7 +53,7 @@ export default function Register() {
             <input
               type="text"
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              placeholder="Nama lengkap"
+              placeholder="full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -94,10 +97,10 @@ export default function Register() {
         </form>
 
         <p className="text-sm text-center text-gray-500 mt-4">
-          Sudah punya akun?{" "}
-          <a href="/auth/login" className="text-blue-600 hover:underline">
-            Login di sini
-          </a>
+          Already have an account?{" "}
+          <Link to="/auth/login" className="text-blue-600 hover:underline">
+            Login here
+          </Link>
         </p>
       </div>
     </div>
