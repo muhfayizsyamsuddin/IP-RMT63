@@ -22,6 +22,7 @@ const { sequelize, User } = require("../models");
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
+  await User.destroy({ where: {} }); // Clear User table to avoid unique constraint errors
   await User.create({
     name: "Test User",
     email: "test@mail.com",
@@ -81,7 +82,7 @@ describe("POST /auth/login", () => {
     expect(res.body).toHaveProperty("message", "User not found");
   });
   test("should return 500 for server error", async () => {
-    jest.spyOn(User, "findOne").mockImplementation(() => {
+    const spy = jest.spyOn(User, "findOne").mockImplementation(() => {
       throw new Error("Database error");
     });
 
@@ -92,6 +93,7 @@ describe("POST /auth/login", () => {
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toHaveProperty("message", "Internal Server Error");
+    spy.mockRestore();
   });
   test("should return 400 for weak password", async () => {
     const res = await request(app).post("/auth/login").send({
@@ -192,7 +194,7 @@ describe("POST /auth/register", () => {
     );
   });
   test("should return 500 for server error", async () => {
-    jest.spyOn(User, "create").mockImplementation(() => {
+    const spy = jest.spyOn(User, "create").mockImplementation(() => {
       throw new Error("Database error");
     });
 
@@ -204,6 +206,7 @@ describe("POST /auth/register", () => {
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toHaveProperty("message", "Internal Server Error");
+    spy.mockRestore();
   });
   test("should return 400 for missing email", async () => {
     const res = await request(app).post("/auth/register").send({
@@ -286,8 +289,9 @@ describe("POST /auth/login/google", () => {
     expect(res.statusCode).toBe(400);
     expect(res.body).toHaveProperty("message", "id_token is required");
   });
+
   test("should return 500 for server error", async () => {
-    jest.spyOn(User, "findOne").mockImplementation(() => {
+    const spy = jest.spyOn(User, "findOne").mockImplementation(() => {
       throw new Error("Database error");
     });
 
@@ -297,5 +301,6 @@ describe("POST /auth/login/google", () => {
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toHaveProperty("message", "Internal Server Error");
+    spy.mockRestore();
   });
 });

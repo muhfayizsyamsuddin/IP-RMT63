@@ -2,6 +2,7 @@
 import { useState } from "react";
 // import axios from "axios";
 import { api } from "../helpers/http-client";
+import { ErrorAlert, SuccessAlert } from "../helpers/alert";
 
 export default function BookingForm({ courtId }) {
   const [form, setForm] = useState({
@@ -35,10 +36,12 @@ export default function BookingForm({ courtId }) {
           },
         }
       );
-      alert("✅ Booking berhasil!");
+      SuccessAlert("Bookings created successfully!");
     } catch (err) {
       console.error(err);
-      alert("❌ Gagal booking. Coba lagi.");
+      const errors =
+        err.response?.data?.message || err.message || "Something went wrong!";
+      ErrorAlert(errors, "Create Booking Failed");
     }
   }
 
@@ -61,70 +64,91 @@ export default function BookingForm({ courtId }) {
       setRecommendation(response.data.recommendation || "Tidak ada hasil.");
     } catch (err) {
       console.error(err);
-      alert("❌ Gagal mendapatkan rekomendasi.");
+      const errors =
+        err.response?.data?.message || err.message || "Something went wrong!";
+      ErrorAlert(errors, "AI Recommendation Failed");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border p-4 rounded shadow-sm">
-      <h4 className="mb-3">Booking Lapangan</h4>
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-md mx-auto bg-white border border-gray-200 rounded-xl shadow-lg p-6 space-y-6"
+      style={{ fontFamily: "Inter, Arial, sans-serif" }}
+    >
+      <h4 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+        Booking Lapangan
+      </h4>
 
-      <div className="mb-3">
-        <label className="form-label">Tanggal</label>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Tanggal
+        </label>
         <input
           type="date"
           name="date"
-          className="form-control"
+          className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={form.date}
           onChange={handleChange}
           required
         />
       </div>
 
-      <div className="mb-3">
-        <label className="form-label">Jam Mulai</label>
-        <input
-          type="time"
-          name="startTime"
-          className="form-control"
-          value={form.startTime}
-          onChange={handleChange}
-          required
-        />
+      <div className="mb-4 flex gap-4">
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Jam Mulai
+          </label>
+          <input
+            type="time"
+            name="startTime"
+            className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={form.startTime}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Jam Selesai
+          </label>
+          <input
+            type="time"
+            name="endTime"
+            className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={form.endTime}
+            onChange={handleChange}
+            required
+          />
+        </div>
       </div>
 
-      <div className="mb-3">
-        <label className="form-label">Jam Selesai</label>
-        <input
-          type="time"
-          name="endTime"
-          className="form-control"
-          value={form.endTime}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <button type="submit" className="btn btn-primary w-100">
+      <button
+        type="submit"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-150"
+      >
         Booking Sekarang
       </button>
-      <hr className="my-4" />
+
+      <hr className="my-6 border-gray-200" />
 
       {/* AI Recommendation Section */}
-      <div className="space-y-2">
-        <label>Preferensi Booking (opsional)</label>
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-gray-700">
+          Preferensi Booking <span className="text-gray-400">(opsional)</span>
+        </label>
         <input
           type="text"
           value={preference}
           onChange={(e) => setPreference(e.target.value)}
           placeholder="Contoh: pagi hari, cuaca cerah"
-          className="form-control"
+          className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
         <button
           type="button"
-          className="btn btn-success w-100"
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition duration-150"
           onClick={handleRecommendation}
           disabled={loading}
         >
@@ -132,13 +156,19 @@ export default function BookingForm({ courtId }) {
         </button>
 
         {recommendation && (
-          <div className="alert alert-info mt-3">
+          <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-4 py-3 mt-2">
             <strong>Rekomendasi:</strong> {recommendation}
           </div>
         )}
       </div>
-      {loading && <p className="text-muted">Sedang memproses AI...</p>}
-      <p className="text-sm text-muted">Debug: {recommendation}</p>
+      {loading && (
+        <p className="text-sm text-gray-500 mt-2 text-center">
+          Sedang memproses AI...
+        </p>
+      )}
+      <p className="text-xs text-gray-400 text-center mt-2">
+        Debug: {recommendation}
+      </p>
     </form>
   );
 }

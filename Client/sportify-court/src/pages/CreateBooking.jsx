@@ -51,12 +51,12 @@ export default function BookingForm() {
       console.log("📩 Text rekomendasi:", response.data.recommendation);
       // setRecommendation("Saran: Booking jam 7 pagi atau jam 4 sore.");
       setRecommendation(response.data.recommendation || "Tidak ada hasil.");
-      SuccessAlert("Rekomendasi AI berhasil!");
+      SuccessAlert("AI recommendation fetched successfully!");
     } catch (err) {
       console.error(err);
       const errors =
         err.response?.data?.message || err.message || "Something went wrong!";
-      ErrorAlert(errors, "Fetch Courts Failed");
+      ErrorAlert(errors, "AI Recommendation Failed");
     } finally {
       setLoadingAi(false);
     }
@@ -72,13 +72,13 @@ export default function BookingForm() {
         timeStart,
         timeEnd,
       });
-      SuccessAlert("Booking berhasil!");
+      SuccessAlert("Bookings created successfully!");
       navigate("/bookings/mine");
     } catch (err) {
       console.error("❌ Gagal booking:", err);
       const errors =
         err.response?.data?.message || err.message || "Something went wrong!";
-      ErrorAlert(errors, "Booking Failed");
+      ErrorAlert(errors, "Create Booking Failed");
     } finally {
       setLoading(false);
     }
@@ -87,75 +87,101 @@ export default function BookingForm() {
   if (!court) return <div className="text-center mt-20">Loading...</div>;
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-4">Booking: {court.name}</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium mb-1">Tanggal</label>
-          <input
-            type="date"
-            required
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Waktu Mulai</label>
-          <input
-            type="time"
-            required
-            value={timeStart}
-            onChange={(e) => setTimeStart(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Waktu Selesai</label>
-          <input
-            type="time"
-            required
-            value={timeEnd}
-            onChange={(e) => setTimeEnd(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow w-full"
-        >
-          {loading ? "Memproses..." : "Booking Sekarang"}
-        </button>
-        <hr className="my-4" />
-
-        {/* AI Recommendation Section */}
-        <div className="space-y-2">
-          <label>Preferensi Booking</label>
-          <input
-            type="text"
-            value={preference}
-            onChange={(e) => setPreference(e.target.value)}
-            placeholder="Contoh: pagi hari, cuaca cerah"
-            className="w-full border px-3 py-2 rounded"
-          />
-          <button
-            type="button"
-            onClick={handleRecommendation}
-            disabled={loadingAi}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow w-full"
-          >
-            {loadingAi ? "Memproses..." : "Rekomendasikan Waktu Booking (AI)"}
-          </button>
-
-          {recommendation && (
-            <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded shadow">
-              <strong>Rekomendasi AI:</strong> {recommendation}
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-10">
+      <div className="max-w-xl mx-auto px-6 py-10 bg-white rounded-lg shadow-lg">
+        <h2 className="text-3xl font-extrabold mb-6 text-gray-800 text-center">
+          Booking: <span className="text-green-600">{court.name}</span>
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block font-semibold mb-2 text-gray-700">
+              Tanggal
+            </label>
+            <input
+              type="date"
+              required
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+            />
+          </div>
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block font-semibold mb-2 text-gray-700">
+                Waktu Mulai
+              </label>
+              <input
+                type="time"
+                required
+                value={timeStart}
+                onChange={(e) => setTimeStart(e.target.value)}
+                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              />
             </div>
+            <div className="flex-1">
+              <label className="block font-semibold mb-2 text-gray-700">
+                Waktu Selesai
+              </label>
+              <input
+                type="time"
+                required
+                value={timeEnd}
+                onChange={(e) => setTimeEnd(e.target.value)}
+                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 rounded-lg font-bold text-lg shadow transition ${
+              loading
+                ? "bg-green-300 text-white cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700 text-white"
+            }`}
+          >
+            {loading ? "Memproses..." : "Booking Sekarang"}
+          </button>
+          <hr className="my-6 border-gray-200" />
+
+          {/* AI Recommendation Section */}
+          <div className="space-y-3">
+            <label className="block font-semibold mb-2 text-gray-700">
+              Preferensi Booking
+            </label>
+            <input
+              type="text"
+              value={preference}
+              onChange={(e) => setPreference(e.target.value)}
+              placeholder="Contoh: pagi hari, cuaca cerah"
+              className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+            <button
+              type="button"
+              onClick={handleRecommendation}
+              disabled={loadingAi}
+              className={`w-full py-3 rounded-lg font-bold text-lg shadow transition ${
+                loadingAi
+                  ? "bg-blue-300 text-white cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
+            >
+              {loadingAi ? "Memproses..." : "Rekomendasikan Waktu Booking (AI)"}
+            </button>
+
+            {recommendation && (
+              <div className="bg-blue-50 border border-blue-200 text-blue-900 px-4 py-3 rounded-lg shadow-sm mt-2">
+                <strong>Rekomendasi AI:</strong> {recommendation}
+              </div>
+            )}
+          </div>
+          {loadingAi && (
+            <p className="text-sm text-gray-500 text-center mt-2">
+              Sedang memproses AI...
+            </p>
           )}
-        </div>
-        {loadingAi && <p className="text-muted">Sedang memproses AI...</p>}
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

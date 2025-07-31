@@ -10,12 +10,7 @@ module.exports = class authController {
     try {
       const { name, email, password, role } = req.body;
 
-      const newUser = await User.create({
-        name,
-        email,
-        password,
-        role: role || "user",
-      });
+      const newUser = await User.create(req.body);
       res.status(201).json({
         message: "User registered successfully",
         user: {
@@ -34,29 +29,29 @@ module.exports = class authController {
     const { email, password } = req.body;
     try {
       if (!email) {
-        throw { name: "BadRequest", message: "Email is required" }; //400
+        throw { name: "BadRequest", message: "Email is required" }; // 400
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        throw { name: "BadRequest", message: "Invalid email format" }; // 400
       }
       if (!password) {
-        throw { name: "BadRequest", message: "Password is required" }; //400
+        throw { name: "BadRequest", message: "Password is required" }; // 400
       }
-      if (!password || password.length < 6) {
+      if (password.length < 6) {
         throw {
           name: "BadRequest",
           message: "Password must be at least 6 characters long",
         };
       }
       const user = await User.findOne({ where: { email } });
-      // console.log(user);
       if (!user) {
-        throw {
-          name: "Unauthorized",
-          message: "Invalid email or password",
-        };
-      } // 401
+        return res.status(404).json({ message: "User not found" });
+      }
       const isValidPassword = comparePassword(password, user.password);
       if (!isValidPassword) {
-        throw { name: "Unauthorized", message: "Invalid email or password" };
-      } // 401
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
       const accessToken = signToken({ id: user.id, role: user.role });
       res.status(200).json({
         message: "Login Success",
@@ -75,18 +70,20 @@ module.exports = class authController {
   static async googleLogin(req, res, next) {
     const { id_token } = req.body;
     try {
+      if (!id_token) {
+        throw { name: "BadRequest", message: "id_token is required" }; // 400
+      }
       const ticket = await client.verifyIdToken({
         idToken: id_token,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
       const { name, email } = ticket.getPayload();
-      // console.log("Google Payload:", { name, email });
       let user = await User.findOne({ where: { email } });
       if (!user) {
         user = await User.create({
           name,
           email,
-          password: Math.random().toString(36).slice(-8), // Placeholder password
+          password: Math.random().toString(36).slice(-8),
           role: "user",
         });
       }
@@ -97,7 +94,7 @@ module.exports = class authController {
         user: {
           id: user.id,
           name: user.name,
-          role: user.role, // ⬅️ sertakan role ke frontend
+          role: user.role,
         },
       });
     } catch (err) {
