@@ -169,7 +169,7 @@ export default function MyBookings() {
                       Pembayaran:
                     </span>
                     <div>
-                      {b.Payment?.status === "paid" ? (
+                      {b.Payment?.[0]?.status === "paid" ? (
                         <span className="inline-flex items-center gap-2 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full border border-green-200">
                           {/* ...icon... */}
                           Sudah Dibayar
@@ -192,7 +192,7 @@ export default function MyBookings() {
                     className="w-44 h-32 object-cover rounded-lg border border-gray-200 shadow"
                   />
                 )}
-                {b.Payment?.status !== "paid" &&
+                {b.Payment?.[0]?.status !== "paid" &&
                   (b.status === "confirmed" || b.status === "approved") && (
                     <>
                       <button
