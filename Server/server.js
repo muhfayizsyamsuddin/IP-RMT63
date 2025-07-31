@@ -1,4 +1,5 @@
 // server.js
+require("dotenv").config();
 const cors = require("cors");
 const app = require("./app");
 
@@ -9,8 +10,6 @@ app.use(
   })
 );
 console.log("NODE_ENV:", process.env.NODE_ENV);
-
-require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
 
