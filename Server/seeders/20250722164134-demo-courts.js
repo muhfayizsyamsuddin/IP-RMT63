@@ -101,7 +101,7 @@ module.exports = {
         pricePerHour: 140000,
         description: "Lapangan futsal indoor rumput sintetis.",
         imageUrl:
-          "https://images.unsplash.com/photo-1716745558902-c4d7a19a397d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzV8fGZ1dHNhbHxlbnwwfHwwfHx8MA%3D%3D",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPXgPcFLGd2xqqrlYlXriV7JpHChaOFFaqZA&s",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -112,7 +112,7 @@ module.exports = {
         pricePerHour: 125000,
         description: "Lapangan indoor dengan AC dan papan skor elektronik.",
         imageUrl:
-          "https://www.pexels.com/photo/basketball-court-on-shore-17852295/",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIqF5EXjj-0_LYDLKe4np6ng3aLUeRzTdjZw&s",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -145,7 +145,7 @@ module.exports = {
         pricePerHour: 95000,
         description: "Lapangan volley dengan tribun penonton.",
         imageUrl:
-          "https://www.pexels.com/photo/unpaved-volleyball-court-in-forest-6495327/",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIgD47eHjui8wqalojPnP1opTWUZGMXF-9qg&s",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -178,7 +178,7 @@ module.exports = {
         pricePerHour: 95000,
         description: "4 lapangan dengan AC dan kantin.",
         imageUrl:
-          "https://www.pexels.com/photo/aerial-night-view-of-tennis-court-in-seoul-33114815/",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLX8-zLvd68YE_5CtHYSDTeD7h-V__WSPLBA&s",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -189,7 +189,7 @@ module.exports = {
         pricePerHour: 90000,
         description: "Volley court outdoor full pasir.",
         imageUrl:
-          "https://www.pexels.com/photo/people-playing-a-sport-6203584/",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrSvZy4uT_AlyGGzeoMGHpXRTZj87rCcbPIA&s",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -200,7 +200,7 @@ module.exports = {
         pricePerHour: 110000,
         description: "Lapangan semi indoor dengan papan skor digital.",
         imageUrl:
-          "https://www.pexels.com/photo/aerial-view-of-sports-courts-surrounded-by-lush-trees-30723975/",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTytxjKVoYZbYCrkmjq6Ofd1VLR-XDLg6bPmA&s",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -222,7 +222,7 @@ module.exports = {
         pricePerHour: 190000,
         description: "Mini soccer outdoor rumput sintetis dan cafetaria.",
         imageUrl:
-          "https://www.pexels.com/photo/aerial-view-of-soccer-field-1171084/",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjkN-zlIEkKExI00fk_0ZybZO1FoyErY1o9w&s",
         createdAt: new Date(),
         updatedAt: new Date(),
       },

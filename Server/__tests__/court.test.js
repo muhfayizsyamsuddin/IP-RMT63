@@ -7,8 +7,11 @@ let adminToken;
 let courtId;
 
 beforeAll(async () => {
+  await sequelize.sync({ force: true });
+
   // Buat user admin (jika belum ada)
   const admin = await User.create({
+    name: "Admin Test",
     email: "admin@mail.com",
     password: "123456", // pastikan dihash jika pakai hook
     role: "admin",
@@ -30,8 +33,6 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await Court.destroy({ where: {} });
-  await User.destroy({ where: {} });
   await sequelize.close();
 });
 
@@ -40,6 +41,15 @@ describe("Court Endpoints", () => {
     it("should return list of courts", async () => {
       const res = await request(app)
         .get("/courts")
+        .set("Authorization", `Bearer ${adminToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+
+    it("should return courts ordered by ASC", async () => {
+      const res = await request(app)
+        .get("/courts?order=ASC")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.statusCode).toBe(200);
@@ -55,6 +65,15 @@ describe("Court Endpoints", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("id", courtId);
+    });
+
+    it("should return 404 if court not found", async () => {
+      const res = await request(app)
+        .get("/courts/99999")
+        .set("Authorization", `Bearer ${adminToken}`);
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty("message", "Court not found");
     });
   });
 
@@ -75,6 +94,19 @@ describe("Court Endpoints", () => {
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty("id");
     });
+
+    it("should return 400 for invalid court data", async () => {
+      const res = await request(app)
+        .post("/courts")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          // Missing required fields
+          name: "",
+          location: "",
+        });
+
+      expect(res.statusCode).toBe(400);
+    });
   });
 
   describe("PUT /courts/:id", () => {
@@ -93,6 +125,23 @@ describe("Court Endpoints", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("message", "Court updated successfully");
+    });
+
+    it("should return 404 if court not found for update", async () => {
+      const res = await request(app)
+        .put("/courts/99999")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          name: "Updated Name",
+          location: "Updated Location",
+          category: "Futsal",
+          pricePerHour: 250000,
+          description: "Updated description",
+          imageUrl: "https://example.com/updated.jpg",
+        });
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty("message", "Court not found");
     });
   });
 
@@ -113,6 +162,15 @@ describe("Court Endpoints", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("message", "Court deleted successfully");
+    });
+
+    it("should return 404 if court not found for delete", async () => {
+      const res = await request(app)
+        .delete("/courts/99999")
+        .set("Authorization", `Bearer ${adminToken}`);
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty("message", "Court not found");
     });
   });
 });

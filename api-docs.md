@@ -1,4 +1,4 @@
-## 📚 API Documentation
+## API Documentation
 
 ### **Authentication**
 
@@ -49,13 +49,51 @@
   - **200 OK**:
     ```json
     {
-      "accessToken": "string"
+      "message": "Login Success",
+      "access_token": "string",
+      "user": {
+        "id": "integer",
+        "name": "string",
+        "email": "string",
+        "role": "string"
+      }
     }
     ```
   - **401 Unauthorized**:
     ```json
     {
       "message": "Invalid email or password"
+    }
+    ```
+
+#### **3. Google Login**
+
+- **Endpoint**: `POST /auth/login/google`
+- **Description**: Login menggunakan Google OAuth.
+- **Request Body**:
+  ```json
+  {
+    "id_token": "string"
+  }
+  ```
+- **Response**:
+  - **200 OK**:
+    ```json
+    {
+      "message": "Google Login Success",
+      "access_token": "string",
+      "user": {
+        "id": "integer",
+        "name": "string",
+        "email": "string",
+        "role": "string"
+      }
+    }
+    ```
+  - **401 Unauthorized**:
+    ```json
+    {
+      "message": "Invalid Google token"
     }
     ```
 
@@ -108,6 +146,59 @@
     ```json
     {
       "message": "User deleted successfully"
+    }
+    ```
+
+### **Public**
+
+#### **1. Get Public Courts**
+
+- **Endpoint**: `GET /public/courts`
+- **Description**: Mendapatkan semua lapangan untuk publik (tanpa autentikasi).
+- **Query Parameters**:
+  - `page`: Nomor halaman (default: 1)
+  - `limit`: Jumlah data per halaman (default: 10)
+  - `search`: Pencarian berdasarkan nama atau lokasi
+  - `category`: Filter berdasarkan kategori
+- **Response**:
+  - **200 OK**:
+    ```json
+    {
+      "courts": [
+        {
+          "id": "integer",
+          "name": "string",
+          "location": "string",
+          "pricePerHour": "integer",
+          "description": "string",
+          "imageUrl": "string",
+          "category": "string"
+        }
+      ],
+      "pagination": {
+        "page": "integer",
+        "limit": "integer",
+        "total": "integer",
+        "totalPages": "integer"
+      }
+    }
+    ```
+
+#### **2. Get Public Court by ID**
+
+- **Endpoint**: `GET /public/courts/:id`
+- **Description**: Mendapatkan detail lapangan untuk publik.
+- **Response**:
+  - **200 OK**:
+    ```json
+    {
+      "id": "integer",
+      "name": "string",
+      "location": "string",
+      "pricePerHour": "integer",
+      "description": "string",
+      "imageUrl": "string",
+      "category": "string"
     }
     ```
 

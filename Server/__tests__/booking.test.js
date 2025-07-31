@@ -63,7 +63,7 @@ describe("POST /bookings", () => {
       .set("Authorization", `Bearer ${userToken}`)
       .send({
         CourtId: courtId,
-        date: "2025-07-26",
+        date: "2025-07-27", // Different date to avoid overlap
         timeStart: "09:00",
         timeEnd: "11:00",
       });
@@ -148,7 +148,7 @@ describe("PATCH /bookings/:id", () => {
   it("should update booking and return success", async () => {
     const res = await request(app)
       .patch(`/bookings/${bookingId}`)
-      .set("Authorization", `Bearer ${access_token}`)
+      .set("Authorization", `Bearer ${userToken}`)
       .send({
         date: "2025-08-06",
         timeStart: "09:00",

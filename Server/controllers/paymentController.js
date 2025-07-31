@@ -45,6 +45,7 @@ module.exports = class paymentController {
           id: BookingId,
           UserId: req.user.id,
         },
+        include: [{ model: Court }],
       });
 
       if (!booking) {
@@ -55,7 +56,7 @@ module.exports = class paymentController {
       if (!orderId) {
         return res.status(500).json({ message: "Order ID generation failed" });
       }
-      const amount = 10000;
+      const amount = booking.Court?.pricePerHour || 10000;
       let parameter = {
         // ini adalah data detail order
         transaction_details: {
